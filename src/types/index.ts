@@ -50,3 +50,11 @@ export interface SearchResult {
     available: number;
     possibleOffers: (Sticker & { available: number })[];
 }
+
+export interface Trade {
+  id: string;
+  requestedSticker: string;
+  offeredSticker: string[];
+  partner: string;
+  status: "declined" | "ongoing" | "accepted";
+}

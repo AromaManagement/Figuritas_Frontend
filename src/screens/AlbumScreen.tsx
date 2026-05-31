@@ -91,10 +91,10 @@ export default function AlbumScreen({ navigation }: any) {
         <Text style={styles.headerTitle}>My Album</Text>
         <View style={styles.headerButtons}>
           <TouchableOpacity
-            onPress={() => navigation.navigate("Search")}
+            onPress={() => navigation.navigate("Trade")}
             style={styles.searchBtn}
           >
-            <Text style={styles.searchBtnText}>Search</Text>
+            <Text style={styles.searchBtnText}>Trade</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={logout} style={styles.logoutBtn}>
             <Text style={styles.logoutBtnText}>Sign Out</Text>
