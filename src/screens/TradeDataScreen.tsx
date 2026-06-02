@@ -1,157 +1,144 @@
+// ...existing code...
 import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
-  FlatList,
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
 } from "react-native";
-import { Trade } from "../types";
+import { Sticker, Trade } from "../types";
 
-const RECEIVED = "received" as const;
-const SENT = "sent" as const;
-type Tab = typeof RECEIVED | typeof SENT;
-
-export default function TradeScreen({ navigation }: any) {
+export default function TradeDataScreen({ navigation }: any) {
   const [loading, setLoading] = useState(false);
-  const [sentTrades, setSentTrades] = useState<Trade[]>([]);
-  const [receivedTrades, setReceivedTrades] = useState<Trade[]>([]);
-  const [activeTab, setActiveTab] = useState<Tab>(RECEIVED);
+  const [trade, setTrade] = useState<Trade | null>(null);
 
   useEffect(() => {
-    // replace with real fetch; this is sample data to show layout
     setLoading(true);
-    const sampleSent: Trade[] = [
-      {
-        id: "1",
-        requestedSticker: "Messi 2026",
-        offeredSticker: ["Ronaldo 2026"],
-        partner: "Carlos",
-        status: "ongoing",
-      },
-      {
-        id: "2",
-        requestedSticker: "Maradona classic",
-        offeredSticker: ["Pele legacy"],
-        partner: "Ana",
-        status: "declined",
-      },
-      {
-        id: "3",
-        requestedSticker: "Pele legacy",
-        offeredSticker: ["Maradona classic"],
-        partner: "Sofia",
-        status: "accepted",
-      },
-    ];
-    const sampleReceived: Trade[] = [
-        {
-            id: "4",
-            requestedSticker: "Neymar 2026",
-            offeredSticker: ["Mbappe 2026"],
-            partner: "Luis",
-            status: "ongoing",
-        },
-        {
-            id: "5",
-            requestedSticker: "Zidane classic",
-            offeredSticker: ["Ronaldinho legacy"],
-            partner: "Maria",
-            status: "declined",
-        }
-    ];
+    // only one trade sample
+        const sample: Trade = {
+          id: "1",
+          requestedSticker: {
+            id: "sticker1",
+            img: "https://example.com/sticker1.png",
+            country: { code: "ARG", name: "Argentina", totalStickers: 20 },
+            countryNumber: 10,
+            name: "Messi 2026",
+          },
+          offeredSticker: [
+            {
+              id: "sticker2",
+              img: "https://example.com/sticker2.png",
+              country: { code: "POR", name: "Portugal", totalStickers: 15 },
+              countryNumber: 5,
+              name: "Ronaldo 2026",
+            },
+          ],
+          partner: "Carlos",
+          status: "accepted",
+          direction: "incoming",
+        };
     setTimeout(() => {
-        setSentTrades(sampleSent);
-        setReceivedTrades(sampleReceived);
-        setLoading(false);
-    }, 500);
+      setTrade(sample);
+      setLoading(false);
+    }, 300);
   }, []);
 
-  const goToSearch = () => {
-    navigation.navigate("Search");
-  };
 
-  const renderTrade = ({ item }: { item: Trade }) => (
-    <View style={styles.tradeItem}>
-      <View style={styles.tradeInfo}>
-        <Text style={styles.cardName}>{item.requestedSticker}</Text>
-        <Text style={styles.partner}> ⇄ {item.offeredSticker.join(", ")}</Text>
-        <Text style={styles.partner}>User: {item.partner}</Text>
+  const formatStickerString = (sticker: Sticker) => {
+    return `${sticker.name} (${sticker.country.code} #${sticker.countryNumber})`;
+  }
+
+  const completeTrade = () => {
+    // Handle complete trade
+  }
+  const acceptTrade = () => {
+    // Handle accept trade
+  }
+
+  const declineTrade = () => {
+    // Handle decline trade
+  }
+
+  if (loading) {
+    return (
+      <View style={[styles.container, styles.center]}>
+        <ActivityIndicator />
       </View>
-      <View style={[styles.statusBadge, statusStyle(item.status)]}>
-        <Text style={styles.statusText}>{item.status.toUpperCase()}</Text>
+    );
+  }
+
+  if (!trade) {
+    return (
+      <View style={[styles.container, styles.center]}>
+        <Text style={styles.empty}>No trade data</Text>
       </View>
-    </View>
+    );
+  }
+
+  const cardsToGive = trade?.direction === "outgoing" ? trade.offeredSticker : [trade.requestedSticker];
+  const cardsToReceive = trade?.direction === "outgoing" ? [trade.requestedSticker] : trade.offeredSticker;
+
+  const Button = ({ text, style, onPress }: { text: string; style?: any; onPress: () => void }) => (
+    <TouchableOpacity style={style} onPress={onPress}>
+      <Text style={styles.actionButtonText}>{text}</Text>
+    </TouchableOpacity>
   );
 
-   
+  
 
-  const displayedTrades = activeTab === RECEIVED ? receivedTrades : sentTrades;
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
+
         <TouchableOpacity onPress={() => navigation.goBack()}>
-        <Text style={styles.backBtn}>← Back</Text>
+          <Text style={styles.backBtn}>← Back</Text>
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Sticker Trades</Text>
-    </View>
+        <Text style={styles.headerTitle}>Trade detail</Text>
+      </View>
 
-    <View style={styles.listContainer}>
-      <View style={styles.searchSection}>
-        <View style={{ flex: 1 }}>
-          <Text style={styles.searchTitle}>Start a trade</Text>
-          <Text style={[styles.searchLabel, { marginTop: 4, marginRight: 8 }]}>
-            Search a sticker you need and find someone to trade with
-          </Text>
+      <View style={styles.listContainer}>
+
+        <View style={styles.detailCard}>
+          <View style={styles.tradeInfo}>
+            <View style={styles.tradeHeader}>
+
+              <Text style={styles.tradeTitle}>Trade #{trade.id}</Text>
+
+              <View style={[styles.statusBadge, statusStyle(trade.status)]}>
+                <Text style={styles.statusText}>{trade.status.toUpperCase()}</Text>
+              </View>
+            </View>
+
+
+            <Text style={styles.label}>You Receive </Text>
+            {cardsToReceive.map((sticker, idx) => (
+              <Text key={idx} style={styles.cardName}>{formatStickerString(sticker)}</Text>
+            ))}
+
+            <Text style={styles.label}>You Offer </Text>
+            {cardsToGive.map((sticker, idx) => (
+              <Text key={idx} style={styles.cardName}>{formatStickerString(sticker)}</Text>
+            ))}
+
+            <Text style={styles.label}>Trading with <Text style={styles.partner}>{trade.partner}</Text></Text>
+            
+            <View style={styles.tradeFooter}>
+              {trade.status === "ongoing" && trade.direction === "incoming" && (
+                <>
+                  <Button text="Decline" style={styles.negativeButton} onPress={declineTrade} />
+                  <Button text="Accept" style={styles.actionButton} onPress={acceptTrade} />
+                </>
+              )}
+              {trade.status === "accepted" && (
+                <Button text="Complete" style={styles.actionButton} onPress={completeTrade} />
+              )}
+            </View>
+          </View>
+
         </View>
-        <TouchableOpacity style={styles.searchButton} onPress={goToSearch}>
-          <Text style={styles.searchButtonText}>Go to Search</Text>
-        </TouchableOpacity>
       </View>
-
-      <View style={styles.listHeader}>
-        <Text style={styles.listHeaderText}>
-          {"Your Trades"}
-        </Text>
-      </View>
-
-      <View style={styles.tabRow}>
-        <TouchableOpacity
-          style={[styles.tabButton, activeTab === RECEIVED && styles.tabActive]}
-          onPress={() => setActiveTab(RECEIVED)}
-        >
-          <Text style={[styles.tabText, activeTab === RECEIVED && styles.tabTextActive]}>
-            Received
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.tabButton, activeTab === SENT && styles.tabActive]}
-          onPress={() => setActiveTab(SENT)}
-        >
-          <Text style={[styles.tabText, activeTab === SENT && styles.tabTextActive]}>Sent</Text>
-        </TouchableOpacity>
-      </View>
-
-     
-
-      {loading ? (
-        <ActivityIndicator style={{ marginTop: 16 }} />
-      ) : (
-        <FlatList
-          data={displayedTrades}
-          keyExtractor={(i) => i.id}
-          renderItem={renderTrade}
-          contentContainerStyle={{ paddingBottom: 24 }}
-          ListEmptyComponent={
-            <Text style={styles.empty}>
-              {activeTab === RECEIVED ? "No received offers" : "No sent offers"}
-            </Text>
-          }
-        />
-      )}
-    </View>
     </View>
   );
 }
@@ -178,73 +165,64 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderBottomWidth: 1,
     borderBottomColor: "#eee",
-    gap: 12,
   },
-  listContainer: { flex: 1, paddingHorizontal: 15 },
-  backBtn: { fontSize: 16, color: "#2196F3" },
-  headerTitle: { fontSize: 20, fontWeight: "bold" },
-  container: { flex: 1, backgroundColor: "#f5f5f5" },
-  title: { fontSize: 24, fontWeight: "700", marginBottom: 12 },
-  searchSection: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingVertical: 8,
-    borderBottomWidth: 1,
-    borderColor: "#eee",
-  },
-  searchTitle: { fontSize: 18, fontWeight: "600" },
-  searchLabel: { fontSize: 16 },
-  searchButton: {
-    backgroundColor: "#2b8cf7",
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 6,
-  },
-  searchButtonText: { color: "#fff", fontWeight: "600" },
+  listContainer: { flex: 1, paddingHorizontal: 15, paddingTop: 12 },
+  backBtn: { fontSize: 16, color: "#2196F3", marginRight: 12 }, 
+  headerTitle: { fontSize: 20, fontWeight: "bold", flex: 1 },
 
-  tabRow: {
-    flexDirection: "row",
+  container: { flex: 1, backgroundColor: "#f5f5f5" },
+
+  tradeHeader: { width: "100%", flexDirection: "row", justifyContent: "space-between", alignItems: "baseline", marginBottom: 0 },
+
+  tradeTitle: { fontSize: 22, fontWeight: "700", marginBottom: 0 },
+
+  detailCard: {
     marginTop: 0,
-    marginBottom: 8,
-    borderRadius: 8,
-    overflow: "hidden",
+    padding: 12,
+    borderRadius: 10,
+    backgroundColor: "#fff",
     borderWidth: 1,
     borderColor: "#e6e6e6",
-  },
-  tabButton: {
-    flex: 1,
-    paddingVertical: 10,
-    alignItems: "center",
-    backgroundColor: "#fafafa",
-  },
-  tabActive: { backgroundColor: "#2b8cf7" },
-  tabText: { color: "#333", fontWeight: "600" },
-  tabTextActive: { color: "#fff" },
-
-  listHeader: { marginTop: 16, marginBottom: 8 },
-  listHeaderText: { fontSize: 18, fontWeight: "600" },
-  tradeItem: {
     flexDirection: "row",
+    justifyContent: "flex-start",
     alignItems: "center",
-    justifyContent: "space-between",
-    padding: 12,
-    borderRadius: 8,
-    backgroundColor: "#fafafa",
-    marginBottom: 10,
-        borderWidth: 1,
-        borderColor: "#ddd",
   },
-  tradeInfo: {},
-  cardName: { fontSize: 16, fontWeight: "600" },
-  partner: { fontSize: 13, color: "#666", marginTop: 4 },
+
+  tradeInfo: { flex: 1, paddingRight: 12, flexShrink: 1, marginTop:0 }, // allow content to shrink on small screens
+  cardName: { fontSize: 18, fontWeight: "700" },
+  partner: { fontSize: 16, color: "#000000", marginTop: 6 },
+
+  label: { fontSize: 14, color: "#666", marginTop: 12 },
+
   statusBadge: {
     paddingVertical: 6,
-    paddingHorizontal: 8,
+    paddingHorizontal: 10,
     borderRadius: 6,
-    minWidth: 80,
+    minWidth: 86,
     alignItems: "center",
+    justifyContent: "center",
+    marginLeft: 8,
   },
   statusText: { fontSize: 12, fontWeight: "700" },
+
   empty: { textAlign: "center", marginTop: 24, color: "#777" },
+  center: { justifyContent: "center", alignItems: "center" },
+
+  tradeFooter: { width: "100%", flexDirection: "row", justifyContent: "flex-end", marginTop: 20 },
+  actionButton: {
+    backgroundColor: "#4CAF50",
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 6,
+    marginLeft: 12,
+  },
+  actionButtonText: { color: "#fff", fontWeight: "600" },
+  negativeButton: {
+    backgroundColor: "#f44336",
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 6,
+  },
+  negativeButtonText: { color: "#fff", fontWeight: "600" },
+  
 });

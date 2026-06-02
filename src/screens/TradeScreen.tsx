@@ -25,22 +25,65 @@ export default function TradeScreen({ navigation }: any) {
     const sampleSent: Trade[] = [
       {
         id: "1",
-        requestedSticker: "Messi 2026",
-        offeredSticker: ["Ronaldo 2026"],
+        requestedSticker: {
+                id: "sticker3",
+                img: "https://example.com/sticker3.png",
+                country: { code: "FRA", name: "France", totalStickers: 18 },
+                countryNumber: 7,
+                name: "Mbappe 2026",
+            },
+        offeredSticker: [{
+                id: "sticker3",
+                img: "https://example.com/sticker3.png",
+                country: { code: "FRA", name: "France", totalStickers: 18 },
+                countryNumber: 7,
+                name: "Mbappe 2026",
+            },
+          {
+                id: "sticker3",
+                img: "https://example.com/sticker3.png",
+                country: { code: "FRA", name: "France", totalStickers: 18 },
+                countryNumber: 7,
+                name: "Mbappe 2026",
+            }],
         partner: "Carlos",
         status: "ongoing",
       },
       {
         id: "2",
-        requestedSticker: "Maradona classic",
-        offeredSticker: ["Pele legacy"],
+        requestedSticker: {
+            id: "sticker2",
+            img: "https://example.com/sticker2.png",
+            country: { code: "ARG", name: "Argentina", totalStickers: 20 },
+            countryNumber: 10,
+            name: "Maradona classic",
+        },
+        offeredSticker: [{
+            id: "sticker1",
+            img: "https://example.com/sticker1.png",
+            country: { code: "BRA", name: "Brazil", totalStickers: 18 },
+            countryNumber: 9,
+            name: "Pele legacy",
+        }],
         partner: "Ana",
         status: "declined",
       },
       {
         id: "3",
-        requestedSticker: "Pele legacy",
-        offeredSticker: ["Maradona classic"],
+        requestedSticker: {
+                id: "sticker3",
+                img: "https://example.com/sticker3.png",
+                country: { code: "FRA", name: "France", totalStickers: 18 },
+                countryNumber: 7,
+                name: "Mbappe 2026",
+            },
+        offeredSticker: [{
+                id: "sticker3",
+                img: "https://example.com/sticker3.png",
+                country: { code: "FRA", name: "France", totalStickers: 18 },
+                countryNumber: 7,
+                name: "Mbappe 2026",
+            }],
         partner: "Sofia",
         status: "accepted",
       },
@@ -48,15 +91,39 @@ export default function TradeScreen({ navigation }: any) {
     const sampleReceived: Trade[] = [
         {
             id: "4",
-            requestedSticker: "Neymar 2026",
-            offeredSticker: ["Mbappe 2026"],
+            requestedSticker: {
+                id: "sticker3",
+                img: "https://example.com/sticker3.png",
+                country: { code: "FRA", name: "France", totalStickers: 18 },
+                countryNumber: 7,
+                name: "Mbappe 2026",
+            },
+            offeredSticker: [{
+                id: "sticker4",
+                img: "https://example.com/sticker4.png",
+                country: { code: "BRA", name: "Brazil", totalStickers: 20 },
+                countryNumber: 9,
+                name: "Neymar 2026",
+            }],
             partner: "Luis",
             status: "ongoing",
         },
         {
             id: "5",
-            requestedSticker: "Zidane classic",
-            offeredSticker: ["Ronaldinho legacy"],
+            requestedSticker: {
+                id: "sticker5",
+                img: "https://example.com/sticker5.png",
+                country: { code: "ITA", name: "Italy", totalStickers: 16 },
+                countryNumber: 4,
+                name: "Baggio classic",
+            },
+            offeredSticker: [{
+                id: "sticker6",
+                img: "https://example.com/sticker6.png",
+                country: { code: "GER", name: "Germany", totalStickers: 18 },
+                countryNumber: 11,
+                name: "Klinsmann legacy",
+            }],
             partner: "Maria",
             status: "declined",
         }
@@ -72,17 +139,21 @@ export default function TradeScreen({ navigation }: any) {
     navigation.navigate("Search");
   };
 
+  const onTradePress = (trade: Trade) => {
+    navigation.navigate("TradeData", { tradeId: trade.id });
+  }
+
   const renderTrade = ({ item }: { item: Trade }) => (
-    <View style={styles.tradeItem}>
+    <TouchableOpacity style={styles.tradeItem} onPress={() => onTradePress(item)}>
       <View style={styles.tradeInfo}>
-        <Text style={styles.cardName}>{item.requestedSticker}</Text>
-        <Text style={styles.partner}> ⇄ {item.offeredSticker.join(", ")}</Text>
+        <Text style={styles.cardName}>{item.requestedSticker.name}</Text>
+        <Text style={styles.partner}> ⇄ {item.offeredSticker.map(sticker => sticker.name).join(", ")}</Text>
         <Text style={styles.partner}>User: {item.partner}</Text>
       </View>
       <View style={[styles.statusBadge, statusStyle(item.status)]}>
         <Text style={styles.statusText}>{item.status.toUpperCase()}</Text>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 
    
