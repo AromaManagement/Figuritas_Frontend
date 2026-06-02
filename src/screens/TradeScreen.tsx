@@ -8,139 +8,22 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { Trade } from "../types";
+import { useTradeController } from "../controllers/useTradeController";
 
 const RECEIVED = "received" as const;
 const SENT = "sent" as const;
 type Tab = typeof RECEIVED | typeof SENT;
 
 export default function TradeScreen({ navigation }: any) {
-  const [loading, setLoading] = useState(false);
-  const [sentTrades, setSentTrades] = useState<Trade[]>([]);
-  const [receivedTrades, setReceivedTrades] = useState<Trade[]>([]);
+  const { outgoingTrades, incomingTrades, loading } = useTradeController();
   const [activeTab, setActiveTab] = useState<Tab>(RECEIVED);
-
-  useEffect(() => {
-    // replace with real fetch; this is sample data to show layout
-    setLoading(true);
-    const sampleSent: Trade[] = [
-      {
-        id: "1",
-        requestedSticker: {
-                id: "sticker3",
-                img: "https://example.com/sticker3.png",
-                country: { code: "FRA", name: "France", totalStickers: 18 },
-                countryNumber: 7,
-                name: "Mbappe 2026",
-            },
-        offeredSticker: [{
-                id: "sticker3",
-                img: "https://example.com/sticker3.png",
-                country: { code: "FRA", name: "France", totalStickers: 18 },
-                countryNumber: 7,
-                name: "Mbappe 2026",
-            },
-          {
-                id: "sticker3",
-                img: "https://example.com/sticker3.png",
-                country: { code: "FRA", name: "France", totalStickers: 18 },
-                countryNumber: 7,
-                name: "Mbappe 2026",
-            }],
-        partner: "Carlos",
-        status: "ongoing",
-      },
-      {
-        id: "2",
-        requestedSticker: {
-            id: "sticker2",
-            img: "https://example.com/sticker2.png",
-            country: { code: "ARG", name: "Argentina", totalStickers: 20 },
-            countryNumber: 10,
-            name: "Maradona classic",
-        },
-        offeredSticker: [{
-            id: "sticker1",
-            img: "https://example.com/sticker1.png",
-            country: { code: "BRA", name: "Brazil", totalStickers: 18 },
-            countryNumber: 9,
-            name: "Pele legacy",
-        }],
-        partner: "Ana",
-        status: "declined",
-      },
-      {
-        id: "3",
-        requestedSticker: {
-                id: "sticker3",
-                img: "https://example.com/sticker3.png",
-                country: { code: "FRA", name: "France", totalStickers: 18 },
-                countryNumber: 7,
-                name: "Mbappe 2026",
-            },
-        offeredSticker: [{
-                id: "sticker3",
-                img: "https://example.com/sticker3.png",
-                country: { code: "FRA", name: "France", totalStickers: 18 },
-                countryNumber: 7,
-                name: "Mbappe 2026",
-            }],
-        partner: "Sofia",
-        status: "accepted",
-      },
-    ];
-    const sampleReceived: Trade[] = [
-        {
-            id: "4",
-            requestedSticker: {
-                id: "sticker3",
-                img: "https://example.com/sticker3.png",
-                country: { code: "FRA", name: "France", totalStickers: 18 },
-                countryNumber: 7,
-                name: "Mbappe 2026",
-            },
-            offeredSticker: [{
-                id: "sticker4",
-                img: "https://example.com/sticker4.png",
-                country: { code: "BRA", name: "Brazil", totalStickers: 20 },
-                countryNumber: 9,
-                name: "Neymar 2026",
-            }],
-            partner: "Luis",
-            status: "ongoing",
-        },
-        {
-            id: "5",
-            requestedSticker: {
-                id: "sticker5",
-                img: "https://example.com/sticker5.png",
-                country: { code: "ITA", name: "Italy", totalStickers: 16 },
-                countryNumber: 4,
-                name: "Baggio classic",
-            },
-            offeredSticker: [{
-                id: "sticker6",
-                img: "https://example.com/sticker6.png",
-                country: { code: "GER", name: "Germany", totalStickers: 18 },
-                countryNumber: 11,
-                name: "Klinsmann legacy",
-            }],
-            partner: "Maria",
-            status: "declined",
-        }
-    ];
-    setTimeout(() => {
-        setSentTrades(sampleSent);
-        setReceivedTrades(sampleReceived);
-        setLoading(false);
-    }, 500);
-  }, []);
 
   const goToSearch = () => {
     navigation.navigate("Search");
   };
 
   const onTradePress = (trade: Trade) => {
-    navigation.navigate("TradeData", { tradeId: trade.id });
+    navigation.navigate("TradeData", { trade: trade });
   }
 
   const renderTrade = ({ item }: { item: Trade }) => (
@@ -148,7 +31,7 @@ export default function TradeScreen({ navigation }: any) {
       <View style={styles.tradeInfo}>
         <Text style={styles.cardName}>{item.requestedSticker.name}</Text>
         <Text style={styles.partner}> ⇄ {item.offeredSticker.map(sticker => sticker.name).join(", ")}</Text>
-        <Text style={styles.partner}>User: {item.partner}</Text>
+        <Text style={styles.partner}>User: {item.partner.username}</Text>
       </View>
       <View style={[styles.statusBadge, statusStyle(item.status)]}>
         <Text style={styles.statusText}>{item.status.toUpperCase()}</Text>
@@ -158,7 +41,7 @@ export default function TradeScreen({ navigation }: any) {
 
    
 
-  const displayedTrades = activeTab === RECEIVED ? receivedTrades : sentTrades;
+  const displayedTrades = activeTab === RECEIVED ? incomingTrades : outgoingTrades;
 
   return (
     <View style={styles.container}>
@@ -230,6 +113,7 @@ export default function TradeScreen({ navigation }: any) {
 const statusStyle = (status: Trade["status"]) => {
   switch (status) {
     case "accepted":
+    case "completed":
       return { backgroundColor: "#d4f5d4" };
     case "ongoing":
       return { backgroundColor: "#fff4c2" };

@@ -51,11 +51,17 @@ export interface SearchResult {
     possibleOffers: (Sticker & { available: number })[];
 }
 
+export interface TradePartner {
+    id: number;
+    username: string;
+    phone?: string;
+}
+
 export interface Trade {
   id: string;
   requestedSticker: Sticker;
   offeredSticker: Sticker[];
-  partner: string;
-  status: "declined" | "ongoing" | "accepted";
+  partner: TradePartner;
+  status: "declined" | "ongoing" | "accepted" | "completed";
   direction?: "incoming" | "outgoing";
 }

@@ -9,40 +9,9 @@ import {
 } from "react-native";
 import { Sticker, Trade } from "../types";
 
-export default function TradeDataScreen({ navigation }: any) {
+export default function TradeDataScreen({ navigation, route }: any) {
   const [loading, setLoading] = useState(false);
-  const [trade, setTrade] = useState<Trade | null>(null);
-
-  useEffect(() => {
-    setLoading(true);
-    // only one trade sample
-        const sample: Trade = {
-          id: "1",
-          requestedSticker: {
-            id: "sticker1",
-            img: "https://example.com/sticker1.png",
-            country: { code: "ARG", name: "Argentina", totalStickers: 20 },
-            countryNumber: 10,
-            name: "Messi 2026",
-          },
-          offeredSticker: [
-            {
-              id: "sticker2",
-              img: "https://example.com/sticker2.png",
-              country: { code: "POR", name: "Portugal", totalStickers: 15 },
-              countryNumber: 5,
-              name: "Ronaldo 2026",
-            },
-          ],
-          partner: "Carlos",
-          status: "accepted",
-          direction: "incoming",
-        };
-    setTimeout(() => {
-      setTrade(sample);
-      setLoading(false);
-    }, 300);
-  }, []);
+  const { trade } = route?.params ?? {};
 
 
   const formatStickerString = (sticker: Sticker) => {
@@ -50,14 +19,29 @@ export default function TradeDataScreen({ navigation }: any) {
   }
 
   const completeTrade = () => {
-    // Handle complete trade
+    setLoading(true);
+    // Simulate API call
+    setTimeout(() => {
+      setLoading(false);
+      // Handle complete trade
+    }, 1000);
   }
   const acceptTrade = () => {
-    // Handle accept trade
+    setLoading(true);
+    // Simulate API call
+    setTimeout(() => {
+      setLoading(false);
+      // Handle accept trade
+    }, 1000);
   }
 
   const declineTrade = () => {
-    // Handle decline trade
+    setLoading(true);
+    // Simulate API call
+    setTimeout(() => {
+      setLoading(false);
+      // Handle decline trade
+    }, 1000);
   }
 
   if (loading) {
@@ -113,16 +97,16 @@ export default function TradeDataScreen({ navigation }: any) {
 
 
             <Text style={styles.label}>You Receive </Text>
-            {cardsToReceive.map((sticker, idx) => (
+            {cardsToReceive.map((sticker: Sticker, idx: number) => (
               <Text key={idx} style={styles.cardName}>{formatStickerString(sticker)}</Text>
             ))}
 
             <Text style={styles.label}>You Offer </Text>
-            {cardsToGive.map((sticker, idx) => (
+            {cardsToGive.map((sticker: Sticker, idx: number) => (
               <Text key={idx} style={styles.cardName}>{formatStickerString(sticker)}</Text>
             ))}
 
-            <Text style={styles.label}>Trading with <Text style={styles.partner}>{trade.partner}</Text></Text>
+            <Text style={styles.label}>Trading with <Text style={styles.partner}>{trade.partner.username}</Text></Text>
             
             <View style={styles.tradeFooter}>
               {trade.status === "ongoing" && trade.direction === "incoming" && (
