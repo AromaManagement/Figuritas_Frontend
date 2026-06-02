@@ -87,8 +87,10 @@ export default function TradeDataScreen({ navigation, route }: any) {
         <View style={styles.detailCard}>
           <View style={styles.tradeInfo}>
             <View style={styles.tradeHeader}>
-
-              <Text style={styles.tradeTitle}>Trade #{trade.id}</Text>
+              <View>
+                <Text style={styles.tradeTitle}>Trade</Text>
+              <Text style={styles.tradeSubtitle}>#{trade.id}</Text>
+            </View>
 
               <View style={[styles.statusBadge, statusStyle(trade.status)]}>
                 <Text style={styles.statusText}>{trade.status.toUpperCase()}</Text>
@@ -159,6 +161,7 @@ const styles = StyleSheet.create({
   tradeHeader: { width: "100%", flexDirection: "row", justifyContent: "space-between", alignItems: "baseline", marginBottom: 0 },
 
   tradeTitle: { fontSize: 22, fontWeight: "700", marginBottom: 0 },
+  tradeSubtitle: { fontSize: 14, color: "#000", marginBottom: 0 },
 
   detailCard: {
     marginTop: 0,

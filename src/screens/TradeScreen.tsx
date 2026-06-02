@@ -14,9 +14,10 @@ const RECEIVED = "received" as const;
 const SENT = "sent" as const;
 type Tab = typeof RECEIVED | typeof SENT;
 
-export default function TradeScreen({ navigation }: any) {
+export default function TradeScreen({ navigation , route}: any) {
   const { outgoingTrades, incomingTrades, loading } = useTradeController();
-  const [activeTab, setActiveTab] = useState<Tab>(RECEIVED);
+  const { initialActiveTab } = route?.params ?? {};
+  const [activeTab, setActiveTab] = useState<Tab>(initialActiveTab || RECEIVED);
 
   const goToSearch = () => {
     navigation.navigate("Search");
@@ -53,17 +54,19 @@ export default function TradeScreen({ navigation }: any) {
     </View>
 
     <View style={styles.listContainer}>
-      <View style={styles.searchSection}>
-        <View style={{ flex: 1 }}>
-          <Text style={styles.searchTitle}>Start a trade</Text>
-          <Text style={[styles.searchLabel, { marginTop: 4, marginRight: 8 }]}>
-            Search a sticker you need and find someone to trade with
-          </Text>
-        </View>
-        <TouchableOpacity style={styles.searchButton} onPress={goToSearch}>
-          <Text style={styles.searchButtonText}>Go to Search</Text>
-        </TouchableOpacity>
-      </View>
+      <View >
+        <Text style={styles.searchTitle}>Start a trade</Text>
+        <View style={styles.searchSection}>
+          <View style={{ flex: 1 }}>
+            <Text style={[styles.searchLabel, { marginTop: 4, marginRight: 8 }]}>
+              Search a sticker you need and find someone to trade with
+            </Text>
+            </View>
+            <TouchableOpacity style={styles.searchButton} onPress={goToSearch}>
+              <Text style={styles.searchButtonText}>Go to Search</Text>
+            </TouchableOpacity>
+          </View>
+          </View>
 
       <View style={styles.listHeader}>
         <Text style={styles.listHeaderText}>
@@ -145,10 +148,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     paddingVertical: 8,
+    paddingTop: 0,
     borderBottomWidth: 1,
     borderColor: "#eee",
   },
-  searchTitle: { fontSize: 18, fontWeight: "600" },
+  searchTitle: { fontSize: 18, fontWeight: "600", marginTop: 10 },
   searchLabel: { fontSize: 16 },
   searchButton: {
     backgroundColor: "#2b8cf7",

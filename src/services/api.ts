@@ -60,7 +60,7 @@ export const tradeService = {
     },
 
     async requestTrade(requestedStickerId: string, offeredStickerId: string[], recipientId: number): Promise<void> {
-        await authFetch("/trades", {
+        await authFetch("/trades/request", {
             method: "POST",
             body: JSON.stringify({ requestedStickerId, offeredStickerId, recipientId }),
         });

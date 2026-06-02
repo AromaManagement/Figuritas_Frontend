@@ -9,6 +9,7 @@ import AlbumScreen from "./src/screens/AlbumScreen";
 import SearchScreen from "./src/screens/SearchScreen";
 import TradeScreen from "./src/screens/TradeScreen";
 import TradeDataScreen from "./src/screens/TradeDataScreen";
+import NewTradeScreen from "./src/screens/NewTradeScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -31,6 +32,7 @@ function AppNavigator() {
           <Stack.Screen name="Search" component={SearchScreen} />
           <Stack.Screen name="Trade" component={TradeScreen} />
           <Stack.Screen name="TradeData" component={TradeDataScreen} />
+          <Stack.Screen name="NewTrade" component={NewTradeScreen} />
         </>
       ) : (
         <>

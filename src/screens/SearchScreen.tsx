@@ -31,10 +31,12 @@ export default function SearchScreen({ navigation }: any) {
       <View style={styles.resultHeader}>
         <Text style={styles.resultUser}>{item.user.username}</Text>
         {item.user.city && <Text style={styles.resultCity}>{item.user.city}</Text>}
+        <TouchableOpacity style={styles.tradeButton} onPress={() => navigation.navigate("NewTrade", { user: item.user, stickerId: selectedStickerId })}>
+          <Text style={styles.tradeButtonText}>Start Trade</Text>
+        </TouchableOpacity>
       </View>
-      <Text style={styles.resultAvailable}>
-        {item.available} available
-      </Text>
+
+      
 
       {item.possibleOffers.length > 0 ? (
         <View style={styles.matchSection}>
@@ -143,12 +145,13 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderRadius: 8,
     padding: 15,
+    paddingTop: 10,
     marginBottom: 10,
     borderWidth: 1,
     borderColor: "#eee",
   },
   resultHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
-  resultUser: { fontSize: 16, fontWeight: "bold" },
+  resultUser: { fontSize: 16, fontWeight: "bold", alignItems: "center" },
   resultCity: { fontSize: 13, color: "#666" },
   resultAvailable: { fontSize: 13, color: "#4CAF50", marginTop: 4 },
   matchSection: { marginTop: 10, padding: 8, backgroundColor: "#f1f8e9", borderRadius: 6 },
@@ -156,4 +159,13 @@ const styles = StyleSheet.create({
   matchItem: { fontSize: 13, color: "#333", marginLeft: 4 },
   noMatch: { fontSize: 13, color: "#999", marginTop: 8, fontStyle: "italic" },
   loadingText: { marginTop: 10, color: "#666" },
+  tradeButton: {
+    backgroundColor: "#2196F3",
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 6,
+    marginTop: 10,
+    alignSelf: "flex-start",
+  },
+  tradeButtonText: { color: "#fff", fontWeight: "600" },
 });

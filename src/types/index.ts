@@ -15,6 +15,7 @@ export interface Sticker {
     id: string;
     country: Country;
     countryNumber: number;
+    code: string;
     name: string;
     type?: StickerType;
     img: string;
