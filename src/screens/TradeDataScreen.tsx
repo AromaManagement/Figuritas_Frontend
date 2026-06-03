@@ -12,8 +12,7 @@ import { useTradeController } from "../controllers/useTradeController";
 
 export default function TradeDataScreen({ navigation, route }: any) {
   const [loading, setLoading] = useState(false);
-  const [tradeId, setTradeId] = useState(route.params?.tradeId);
-  const [phoneNumber, setPhoneNumber] = useState("");
+  const tradeId: string | undefined = route.params?.tradeId;
   const { updateTradeStatus, completeTrade, getTradeById } = useTradeController();
   const [trade, setTrade] = useState<Trade | undefined>(undefined);
 
