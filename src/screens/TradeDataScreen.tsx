@@ -62,7 +62,7 @@ export default function TradeDataScreen({ navigation, route }: any) {
       fetchTradeData(); // Refresh trade data to get updated status
     })
     .catch((error) => {
-      alert("Error completing trade: " + error.message);
+      Alert.alert("Error completing trade", error.message);
     })
     .finally(() => {
       setLoading(false);
