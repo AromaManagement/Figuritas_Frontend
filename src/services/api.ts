@@ -9,6 +9,7 @@ async function authFetch(path: string, options: RequestInit = {}) {
         headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
             ...options.headers,
         },
     });
@@ -80,7 +81,6 @@ export const tradeService = {
     },
 
     async getTradeById(tradeId: string): Promise<Trade> {
-        console.log("Fetching trade with ID:", tradeId);
         return authFetch(`/trades/${tradeId}`);
     }
 };

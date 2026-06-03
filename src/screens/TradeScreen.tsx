@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -9,16 +9,29 @@ import {
 } from "react-native";
 import { Trade } from "../types";
 import { useTradeController } from "../controllers/useTradeController";
+import { useFocusEffect } from "@react-navigation/native";
+import { useCallback } from "react";
 
 const RECEIVED = "received" as const;
 const SENT = "sent" as const;
 type Tab = typeof RECEIVED | typeof SENT;
 
 export default function TradeScreen({ navigation , route}: any) {
-  const { outgoingTrades, incomingTrades, loading } = useTradeController();
+  const { loadTrades, outgoingTrades, incomingTrades, loading } = useTradeController();
   const { initialActiveTab } = route?.params ?? {};
   const [activeTab, setActiveTab] = useState<Tab>(initialActiveTab || RECEIVED);
 
+  const loadTradesRef = useRef(loadTrades);
+  useEffect(() => {
+    loadTradesRef.current = loadTrades;
+  }, [loadTrades]);
+  
+  useFocusEffect(
+    useCallback(() => {
+      loadTradesRef.current();
+    }, [])
+  );
+  
   const goToSearch = () => {
     navigation.navigate("Search");
   };

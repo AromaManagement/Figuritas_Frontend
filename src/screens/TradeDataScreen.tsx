@@ -1,4 +1,3 @@
-// ...existing code...
 import React, { useState, useEffect } from "react";
 import {
   View,
@@ -13,12 +12,12 @@ import { useTradeController } from "../controllers/useTradeController";
 
 export default function TradeDataScreen({ navigation, route }: any) {
   const [loading, setLoading] = useState(false);
-  const { tradeId } = route?.params ?? {};
+  const [tradeId, setTradeId] = useState(route.params?.tradeId);
   const [phoneNumber, setPhoneNumber] = useState("");
   const { updateTradeStatus, completeTrade, getTradeById } = useTradeController();
   const [trade, setTrade] = useState<Trade | undefined>(undefined);
 
-  useEffect(() => {
+  const fetchTradeData = () => {
     if (!tradeId) {
       Alert.alert("Error", "No trade ID provided");
       navigation.goBack();
@@ -26,22 +25,27 @@ export default function TradeDataScreen({ navigation, route }: any) {
     }
     
     setLoading(true);
+    
     getTradeById(tradeId)
-    .then((data) => {
-      if (!data) {
-        Alert.alert("Error", "Trade not found");
+      .then((data) => {
+        if (!data) {
+          Alert.alert("Error", "Trade not found");
+          navigation.goBack();
+          return;
+        }
+        setTrade(data);
+      })
+      .catch((error) => {
+        Alert.alert("Error loading trade", error.message);
         navigation.goBack();
-        return;
-      }
-      setTrade(data);
-    })
-    .catch((error) => {
-      Alert.alert("Error loading trade", error.message);
-      navigation.goBack();
-    })
-    .finally(() => {
-      setLoading(false);
-    });
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
+  useEffect(() => {
+    fetchTradeData();
   }, [tradeId]);
 
   const formatStickerString = (sticker: Sticker) => {
@@ -66,13 +70,13 @@ export default function TradeDataScreen({ navigation, route }: any) {
   }
 
   const acceptTrade = () => {
-    console.log("Accepting trade with ID:", trade);
     if (!trade) return;
 
     setLoading(true);
     updateTradeStatus(trade.id, "accepted")
     .then(() => {
       Alert.alert("Success", "Trade accepted successfully!");
+      fetchTradeData(); // Refresh trade data to get updated status and contact info
     })
     .catch((error) => {
       alert("Error accepting trade: " + error.message);
@@ -83,12 +87,19 @@ export default function TradeDataScreen({ navigation, route }: any) {
   }
 
   const declineTrade = () => {
+    if (!trade) return;
     setLoading(true);
-    // Simulate API call
-    setTimeout(() => {
+    updateTradeStatus(trade.id, "declined")
+    .then(() => {
+      Alert.alert("Success", "Trade declined successfully!");
+      fetchTradeData(); // Refresh trade data to get updated status
+    })
+    .catch((error) => {
+      alert("Error declining trade: " + error.message);
+    })
+    .finally(() => {
       setLoading(false);
-      // Handle decline trade
-    }, 1000);
+    });
   }
 
   if (loading) {
@@ -180,7 +191,7 @@ export default function TradeDataScreen({ navigation, route }: any) {
   );
 }
 
-const statusStyle = (status: Trade["status"]) => {
+const statusStyle = (status: Trade["status"]) => { 
   switch (status) {
     case "accepted":
       return { backgroundColor: "#d4f5d4" };

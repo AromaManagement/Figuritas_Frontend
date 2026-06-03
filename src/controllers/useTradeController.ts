@@ -27,15 +27,15 @@ export function useTradeController() {
     };
 
     const requestTrade = async (requestedStickerId: string, offeredStickerIds: string[], recipientId: number) => {
-        tradeService.requestTrade(requestedStickerId, offeredStickerIds, recipientId);
+        await tradeService.requestTrade(requestedStickerId, offeredStickerIds, recipientId);
     }
 
     const updateTradeStatus = async (tradeId: string, newStatus: "accepted" | "declined") => {
-        tradeService.updateTradeStatus(tradeId, newStatus);
+        await tradeService.updateTradeStatus(tradeId, newStatus);
     }
 
     const completeTrade = async (tradeId: string) => {
-        tradeService.completeTrade(tradeId);
+        await tradeService.completeTrade(tradeId);
     };
 
     const getTradeById = (tradeId: string): Promise<Trade | undefined> => {
@@ -43,6 +43,7 @@ export function useTradeController() {
     }
 
     return {
+        loadTrades,
         incomingTrades,
         outgoingTrades,
         loading,
