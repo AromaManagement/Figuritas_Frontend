@@ -10,10 +10,12 @@ import {
 import { useAuth } from "../context/AuthContext";
 import { useAlbumController } from "../controllers/useAlbumController";
 import { Sticker } from "../types";
+import { useFocusEffect } from "@react-navigation/native";
 
 export default function AlbumScreen({ navigation }: any) {
   const { logout } = useAuth();
   const {
+    loadData,
     album,
     loading,
     saving,
@@ -24,6 +26,17 @@ export default function AlbumScreen({ navigation }: any) {
     toggleNeeded,
     saveCollection,
   } = useAlbumController();
+
+  const loadDataRef = React.useRef(loadData);
+  React.useEffect(() => {
+    loadDataRef.current = loadData;
+  }, [loadData]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      loadDataRef.current && loadDataRef.current();
+    }, [])
+  );
 
   const renderSticker = ({ item }: { item: Sticker }) => {
     const state = getCardState(item.id);

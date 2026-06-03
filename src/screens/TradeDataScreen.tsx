@@ -60,6 +60,7 @@ export default function TradeDataScreen({ navigation, route }: any) {
     completeTrade(trade.id)
     .then(() => {
       Alert.alert("Success", "Trade completed successfully!");
+      fetchTradeData(); // Refresh trade data to get updated status
     })
     .catch((error) => {
       alert("Error completing trade: " + error.message);
@@ -195,6 +196,8 @@ const statusStyle = (status: Trade["status"]) => {
   switch (status) {
     case "accepted":
       return { backgroundColor: "#d4f5d4" };
+    case "completed":
+      return { backgroundColor: "#c2c3f0ff" };
     case "ongoing":
       return { backgroundColor: "#fff4c2" };
     case "declined":

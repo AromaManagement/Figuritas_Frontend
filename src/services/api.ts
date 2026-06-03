@@ -14,7 +14,7 @@ async function authFetch(path: string, options: RequestInit = {}) {
         },
     });
 
-    if (!response.ok) {
+    if (!response.ok || ![200, 201, 204].includes(response.status)) {
         const error = await response.json();
         throw new Error(error.error || "Request failed");
     }
