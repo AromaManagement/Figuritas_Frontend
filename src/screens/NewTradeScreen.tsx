@@ -98,10 +98,10 @@ export default function NewTradeScreen({ navigation, route }: any) {
                 <TouchableOpacity
                     style={[
                         styles.button,
-                        stickersToOffer.length === 0 && { backgroundColor: "#bdbdbd", opacity: 0.8 },
+                        (loading || stickersToOffer.length === 0) && { backgroundColor: "#bdbdbd", opacity: 0.8 },
                     ]}
-                    onPress={() => handelRequestTrade()}
-                    disabled={stickersToOffer.length === 0}
+                    onPress={handelRequestTrade}
+                    disabled={loading || stickersToOffer.length === 0}
                 >
                     <Text style={[styles.buttonText, stickersToOffer.length === 0 && { color: "#eee" }]}>
                         Start Trade
