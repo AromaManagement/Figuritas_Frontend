@@ -79,7 +79,7 @@ export default function TradeDataScreen({ navigation, route }: any) {
       fetchTradeData(); // Refresh trade data to get updated status and contact info
     })
     .catch((error) => {
-      alert("Error accepting trade: " + error.message);
+      Alert.alert("Error accepting trade", error.message);
     })
     .finally(() => {
       setLoading(false);
