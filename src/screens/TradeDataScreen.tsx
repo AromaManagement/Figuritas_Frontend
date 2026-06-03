@@ -164,14 +164,16 @@ export default function TradeDataScreen({ navigation, route }: any) {
               <Text key={idx} style={styles.cardName}>{formatStickerString(sticker)}</Text>
             ))}
 
-            {phoneNumber && (
-              <>
-                <Text style={styles.label}>Contact info</Text>
-                <Text style={styles.partner}>{phoneNumber}</Text>
-              </>
-            )}
+            
 
             <Text style={styles.label}>Trading with <Text style={styles.partner}>{trade.partner.username}</Text></Text>
+            {trade.partner.phonenumber && (
+              <>
+                <Text style={styles.label}>Contact info: 
+                  <Text style={styles.partner}>{trade.partner.phonenumber}</Text>
+                </Text>
+              </>
+            )}
             
             <View style={styles.tradeFooter}>
               {trade.status === "ongoing" && trade.direction === "incoming" && (
@@ -276,5 +278,14 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   negativeButtonText: { color: "#fff", fontWeight: "600" },
+  copyButton: {
+    marginTop: 6,
+    backgroundColor: "#2196F3",
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 6,
+    alignSelf: "flex-start",
+  },
+  copyButtonText: { color: "#fff", fontWeight: "600" },
   
 });

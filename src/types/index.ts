@@ -55,7 +55,7 @@ export interface SearchResult {
 export interface TradePartner {
     id: number;
     username: string;
-    phone?: string;
+    phonenumber?: string;
 }
 
 export interface Trade {

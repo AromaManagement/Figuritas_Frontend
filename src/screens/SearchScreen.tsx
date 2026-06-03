@@ -28,7 +28,9 @@ export default function SearchScreen({ navigation }: any) {
 
   const renderResult = ({ item }: { item: SearchResult }) => (
     <View style={styles.resultCard}>
-      <View style={styles.resultHeader}>
+
+
+        <View style={styles.resultHeader}>
         <Text style={styles.resultUser}>{item.user.username}</Text>
         {item.user.city && <Text style={styles.resultCity}>{item.user.city}</Text>}
         <TouchableOpacity style={styles.tradeButton} onPress={() => navigation.navigate("NewTrade", { user: item.user, stickerId: selectedStickerId })}>
