@@ -24,7 +24,7 @@ export default function TradeScreen({ navigation , route}: any) {
   };
 
   const onTradePress = (trade: Trade) => {
-    navigation.navigate("TradeData", { trade: trade });
+    navigation.navigate("TradeData", { tradeId: trade.id });
   }
 
   const renderTrade = ({ item }: { item: Trade }) => (

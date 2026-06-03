@@ -38,10 +38,15 @@ export function useTradeController() {
         tradeService.completeTrade(tradeId);
     };
 
+    const getTradeById = (tradeId: string): Promise<Trade | undefined> => {
+        return tradeService.getTradeById(tradeId);
+    }
+
     return {
         incomingTrades,
         outgoingTrades,
         loading,
+        getTradeById,
         requestTrade,
         updateTradeStatus,
         completeTrade

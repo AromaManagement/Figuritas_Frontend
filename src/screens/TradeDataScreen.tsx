@@ -6,33 +6,80 @@ import {
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import { Sticker, Trade } from "../types";
+import { useTradeController } from "../controllers/useTradeController";
 
 export default function TradeDataScreen({ navigation, route }: any) {
   const [loading, setLoading] = useState(false);
-  const { trade } = route?.params ?? {};
+  const { tradeId } = route?.params ?? {};
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const { updateTradeStatus, completeTrade, getTradeById } = useTradeController();
+  const [trade, setTrade] = useState<Trade | undefined>(undefined);
 
+  useEffect(() => {
+    if (!tradeId) {
+      Alert.alert("Error", "No trade ID provided");
+      navigation.goBack();
+      return;
+    }
+    
+    setLoading(true);
+    getTradeById(tradeId)
+    .then((data) => {
+      if (!data) {
+        Alert.alert("Error", "Trade not found");
+        navigation.goBack();
+        return;
+      }
+      setTrade(data);
+    })
+    .catch((error) => {
+      Alert.alert("Error loading trade", error.message);
+      navigation.goBack();
+    })
+    .finally(() => {
+      setLoading(false);
+    });
+  }, [tradeId]);
 
   const formatStickerString = (sticker: Sticker) => {
     return `${sticker.name} (${sticker.country.code} #${sticker.countryNumber})`;
   }
 
-  const completeTrade = () => {
+
+  const handleCompleteTrade = () => {
+    if (!trade) return;
+
     setLoading(true);
-    // Simulate API call
-    setTimeout(() => {
+    completeTrade(trade.id)
+    .then(() => {
+      Alert.alert("Success", "Trade completed successfully!");
+    })
+    .catch((error) => {
+      alert("Error completing trade: " + error.message);
+    })
+    .finally(() => {
       setLoading(false);
-      // Handle complete trade
-    }, 1000);
+    });
   }
+
   const acceptTrade = () => {
+    console.log("Accepting trade with ID:", trade);
+    if (!trade) return;
+
     setLoading(true);
-    // Simulate API call
-    setTimeout(() => {
+    updateTradeStatus(trade.id, "accepted")
+    .then(() => {
+      Alert.alert("Success", "Trade accepted successfully!");
+    })
+    .catch((error) => {
+      alert("Error accepting trade: " + error.message);
+    })
+    .finally(() => {
       setLoading(false);
-      // Handle accept trade
-    }, 1000);
+    });
   }
 
   const declineTrade = () => {
@@ -68,9 +115,6 @@ export default function TradeDataScreen({ navigation, route }: any) {
       <Text style={styles.actionButtonText}>{text}</Text>
     </TouchableOpacity>
   );
-
-  
-
 
   return (
     <View style={styles.container}>
@@ -108,6 +152,13 @@ export default function TradeDataScreen({ navigation, route }: any) {
               <Text key={idx} style={styles.cardName}>{formatStickerString(sticker)}</Text>
             ))}
 
+            {phoneNumber && (
+              <>
+                <Text style={styles.label}>Contact info</Text>
+                <Text style={styles.partner}>{phoneNumber}</Text>
+              </>
+            )}
+
             <Text style={styles.label}>Trading with <Text style={styles.partner}>{trade.partner.username}</Text></Text>
             
             <View style={styles.tradeFooter}>
@@ -118,7 +169,7 @@ export default function TradeDataScreen({ navigation, route }: any) {
                 </>
               )}
               {trade.status === "accepted" && (
-                <Button text="Complete" style={styles.actionButton} onPress={completeTrade} />
+                <Button text="Complete" style={styles.actionButton} onPress={handleCompleteTrade} />
               )}
             </View>
           </View>

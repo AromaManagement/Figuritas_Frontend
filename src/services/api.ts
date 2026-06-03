@@ -78,4 +78,9 @@ export const tradeService = {
             method: "PUT",
         });
     },
+
+    async getTradeById(tradeId: string): Promise<Trade> {
+        console.log("Fetching trade with ID:", tradeId);
+        return authFetch(`/trades/${tradeId}`);
+    }
 };
