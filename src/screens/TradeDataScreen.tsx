@@ -95,7 +95,7 @@ export default function TradeDataScreen({ navigation, route }: any) {
       fetchTradeData(); // Refresh trade data to get updated status
     })
     .catch((error) => {
-      alert("Error declining trade: " + error.message);
+      Alert.alert("Error declining trade", error.message);
     })
     .finally(() => {
       setLoading(false);
