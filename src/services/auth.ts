@@ -3,11 +3,11 @@ import { API_URL } from "./config";
 import { AuthResponse } from "../types";
 
 export const authService = {
-    async register(username: string, email: string, password: string): Promise<AuthResponse> {
+    async register(username: string, email: string, password: string, phonenumber: string): Promise<AuthResponse> {
         const response = await fetch(`${API_URL}/auth/register`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username, email, password }),
+            body: JSON.stringify({ username, email, password, phonenumber }),
         });
 
         if (!response.ok) {

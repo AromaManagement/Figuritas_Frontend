@@ -15,8 +15,9 @@ export interface Sticker {
     id: string;
     country: Country;
     countryNumber: number;
+    code: string;
     name: string;
-    type: StickerType;
+    type?: StickerType;
     img: string;
 }
 
@@ -49,4 +50,19 @@ export interface SearchResult {
     sticker: Sticker;
     available: number;
     possibleOffers: (Sticker & { available: number })[];
+}
+
+export interface TradePartner {
+    id: number;
+    username: string;
+    phonenumber?: string;
+}
+
+export interface Trade {
+  id: string;
+  requestedSticker: Sticker;
+  offeredSticker: Sticker[];
+  partner: TradePartner;
+  status: "declined" | "ongoing" | "accepted" | "completed";
+  direction?: "incoming" | "outgoing";
 }

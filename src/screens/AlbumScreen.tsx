@@ -10,10 +10,12 @@ import {
 import { useAuth } from "../context/AuthContext";
 import { useAlbumController } from "../controllers/useAlbumController";
 import { Sticker } from "../types";
+import { useFocusEffect } from "@react-navigation/native";
 
 export default function AlbumScreen({ navigation }: any) {
   const { logout } = useAuth();
   const {
+    loadData,
     album,
     loading,
     saving,
@@ -24,6 +26,17 @@ export default function AlbumScreen({ navigation }: any) {
     toggleNeeded,
     saveCollection,
   } = useAlbumController();
+
+  const loadDataRef = React.useRef(loadData);
+  React.useEffect(() => {
+    loadDataRef.current = loadData;
+  }, [loadData]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      loadDataRef.current && loadDataRef.current();
+    }, [])
+  );
 
   const renderSticker = ({ item }: { item: Sticker }) => {
     const state = getCardState(item.id);
@@ -91,10 +104,10 @@ export default function AlbumScreen({ navigation }: any) {
         <Text style={styles.headerTitle}>My Album</Text>
         <View style={styles.headerButtons}>
           <TouchableOpacity
-            onPress={() => navigation.navigate("Search")}
+            onPress={() => navigation.navigate("Trade")}
             style={styles.searchBtn}
           >
-            <Text style={styles.searchBtnText}>Search</Text>
+            <Text style={styles.searchBtnText}>Trade</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={logout} style={styles.logoutBtn}>
             <Text style={styles.logoutBtnText}>Sign Out</Text>

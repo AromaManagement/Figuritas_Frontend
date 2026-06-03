@@ -15,17 +15,18 @@ export default function RegisterScreen({ navigation }: any) {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [phonenumber, setPhoneNumber] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleRegister = async () => {
-    if (!username || !email || !password) {
+    if (!username || !email || !password || !phonenumber) {
       Alert.alert("Error", "Please fill in all fields");
       return;
     }
 
     setLoading(true);
     try {
-      await register(username, email, password);
+      await register(username, email, password, phonenumber);
     } catch (error: any) {
       Alert.alert("Error", error.message);
     } finally {
@@ -60,6 +61,14 @@ export default function RegisterScreen({ navigation }: any) {
         value={password}
         onChangeText={setPassword}
         secureTextEntry
+      />
+
+      <TextInput
+        style={styles.input}
+        placeholder="Phone Number"
+        value={phonenumber}
+        onChangeText={setPhoneNumber}
+        keyboardType="phone-pad"
       />
 
       <TouchableOpacity style={styles.button} onPress={handleRegister} disabled={loading}>

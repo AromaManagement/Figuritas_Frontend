@@ -120,6 +120,7 @@ export function useAlbumController() {
     };
 
     return {
+        loadData,
         album,
         loading,
         saving,
