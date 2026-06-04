@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { View, Text, TouchableOpacity, StyleSheet, FlatList, Alert } from "react-native";
 import { Sticker } from "../types";
 import { useAlbumController } from "../controllers/useAlbumController";
@@ -30,15 +30,29 @@ export default function NewTradeScreen({ navigation, route }: any) {
 
   const sticker = album.find((s) => s.id === stickerId);
 
-  const myStickers = album
-    .filter(s => getCardState(s.id).quantity > 0)
-    .filter(s => s.id !== stickerId)
-    .map(s => ({ ...s, recommended: userNeeds?.some((need: Sticker) => need.id === s.id) }))
-    .sort((a, b) => {
-      if (a.recommended && !b.recommended) return -1;
-      if (!a.recommended && b.recommended) return 1;
-      return 0;
-    });
+  const myStickers = useMemo(() => {
+    // build a fast lookup for user needs
+    const needsSet = new Set((userNeeds ?? []).map((n: Sticker) => n.id));
+
+    return album
+      .map((s) => {
+        const state = getCardState(s.id);
+        return {
+          ...s,
+          quantity: state?.quantity ?? 0,
+          recommended: needsSet.has(s.id),
+        };
+      })
+      .filter((s) => s.quantity > 0 && s.id !== stickerId)
+      .sort((a, b) => {
+        // recommended first
+        if (a.recommended !== b.recommended) return a.recommended ? -1 : 1;
+        // then by ascending quantity
+        if (a.quantity !== b.quantity) return a.quantity - b.quantity;
+        // fallback: stable alphabetic order
+        return a.name.localeCompare(b.name);
+      });
+  }, [album, stickerId, userNeeds, getCardState]);
 
   const addOrRemoveSticker = (sticker: Sticker) => {
     setStickersToOffer((prev) => {
@@ -60,6 +74,7 @@ export default function NewTradeScreen({ navigation, route }: any) {
         <Text style={styles.optionName} numberOfLines={1}>
           {item.name}
         </Text>
+        <Text style={styles.optionQuantity}>I have: {item.quantity}</Text>
         <Text style={styles.optionRecommended}>{item.recommended && "Recommended"}</Text>
       </TouchableOpacity>
     );
@@ -159,7 +174,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     buttonText: { color: "#fff", fontWeight: "600" },
-    optionsList: { maxHeight: 80, paddingHorizontal: 10 },
+    optionsList: { maxHeight: 900, paddingHorizontal: 10 },
     optionCard: {
         width: 120,
         backgroundColor: "#fff",
@@ -179,5 +194,5 @@ const styles = StyleSheet.create({
     footer: { marginTop: 20 },
     info: { fontSize: 14, color: "#999", fontStyle: "italic" , marginTop: 4  },
     optionRecommended: { fontSize: 11, color: "#4CAF50", marginTop: 4, fontWeight: "bold" },
-
+    optionQuantity: { fontSize: 11, color: "#888", marginTop: 2 },
 });
