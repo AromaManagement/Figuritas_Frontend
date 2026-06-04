@@ -68,6 +68,24 @@ export default function AlbumScreen({ navigation }: any) {
     );
   };
 
+  const countries = React.useMemo(() => {
+    const map = new Map<string, { code: string; name: string }>();
+    album.forEach((s) => {
+      if (!map.has(s.country.code)) {
+        map.set(s.country.code, { code: s.country.code, name: s.country.name });
+      }
+    });
+    return [{ code: "ALL", name: "All" }, ...Array.from(map.values())];
+  }, [album]);
+
+  const [selectedCountry, setSelectedCountry] = React.useState<string>("ALL");
+
+  const filteredAlbum = React.useMemo(() => {
+    if (selectedCountry === "ALL") return album;
+    return album.filter((s) => s.country.code === selectedCountry);
+  }, [album, selectedCountry]);
+
+
   if (loading) {
     return (
       <View style={styles.centered}>
@@ -93,13 +111,38 @@ export default function AlbumScreen({ navigation }: any) {
         </View>
       </View>
 
+      <View style={{ flex: 1, justifyContent: "flex-start"}}>
+
+      <View>
+
+      <FlatList 
+        data={countries}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        keyExtractor={(c) => c.code}
+        contentContainerStyle={styles.chipsContainer}
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            style={[styles.chip, selectedCountry === item.code && styles.chipActive]}
+            onPress={() => setSelectedCountry(item.code)}
+          >
+            <Text style={[styles.chipText, selectedCountry === item.code && styles.chipTextActive]}>
+              {item.code === "ALL" ? "All" : item.code}
+            </Text>
+          </TouchableOpacity>
+        )}
+        />
+      </View>
+
+      {/* grid of stickers (filtered by selected country) */}
       <FlatList
-        data={album}
+        data={filteredAlbum}
+        keyExtractor={(item) => item.id.toString()}
         renderItem={renderSticker}
-        keyExtractor={(item) => item.id}
-        numColumns={2}
         contentContainerStyle={styles.list}
+        numColumns={2}
       />
+      </View>
 
       <TouchableOpacity style={styles.saveBtn} onPress={saveCollection} disabled={saving}>
         {saving ? (
@@ -131,7 +174,7 @@ const styles = StyleSheet.create({
   searchBtnText: { color: "#fff", fontWeight: "bold" },
   logoutBtn: { backgroundColor: "#f44336", borderRadius: 6, paddingHorizontal: 12, paddingVertical: 6 },
   logoutBtnText: { color: "#fff", fontWeight: "bold" },
-  list: { padding: 8 },
+  list: { padding: 8 , flex: 1, justifyContent: "flex-start", backgroundColor: "#f5f5f5" },
   card: {
     flex: 1,
     margin: 4,
@@ -167,4 +210,18 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   saveBtnText: { color: "#fff", fontSize: 16, fontWeight: "bold" },
+  chipsContainer: { paddingHorizontal: 8, paddingVertical: 12, height: 50 },
+  chip: {
+    backgroundColor: "#eee",
+    borderRadius: 20,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    marginRight: 8,
+    height: 32,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  chipActive: { backgroundColor: "#2196F3" },
+  chipText: { color: "#333", fontSize: 12, fontWeight: "bold" },
+  chipTextActive: { color: "#fff" },
 });
