@@ -34,7 +34,7 @@ export default function SearchScreen({ navigation }: any) {
         <View style={styles.resultHeader}>
         <Text style={styles.resultUser}>{item.user.username}</Text>
         {item.user.city && <Text style={styles.resultCity}>{item.user.city}</Text>}
-        <TouchableOpacity style={styles.tradeButton} onPress={() => navigation.navigate("NewTrade", { user: item.user, stickerId: selectedStickerId })}>
+        <TouchableOpacity style={styles.tradeButton} onPress={() => navigation.navigate("NewTrade", { user: item.user, stickerId: selectedStickerId, userNeeds: item.possibleOffers })}>
           <Text style={styles.tradeButtonText}>Start Trade</Text>
         </TouchableOpacity>
       </View>

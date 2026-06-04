@@ -6,7 +6,7 @@ import { useTradeController } from "../controllers/useTradeController";
 
 
 export default function NewTradeScreen({ navigation, route }: any) {
-  const { user, stickerId } = route.params;
+  const { user, stickerId, userNeeds } = route.params;
   const [loading, setLoading] = useState(false);
   const [stickersToOffer, setStickersToOffer] = useState<Sticker[]>([]);
   
@@ -30,6 +30,16 @@ export default function NewTradeScreen({ navigation, route }: any) {
 
   const sticker = album.find((s) => s.id === stickerId);
 
+  const myStickers = album
+    .filter(s => getCardState(s.id).quantity > 0)
+    .filter(s => s.id !== stickerId)
+    .map(s => ({ ...s, recommended: userNeeds?.some((need: Sticker) => need.id === s.id) }))
+    .sort((a, b) => {
+      if (a.recommended && !b.recommended) return -1;
+      if (!a.recommended && b.recommended) return 1;
+      return 0;
+    });
+
   const addOrRemoveSticker = (sticker: Sticker) => {
     setStickersToOffer((prev) => {
       const exists = prev.some((s) => s.id === sticker.id);
@@ -41,7 +51,7 @@ export default function NewTradeScreen({ navigation, route }: any) {
     });
   };
 
-  const renderStickerOption = ({ item }: { item: Sticker }) => (
+  const renderStickerOption = ({ item }: { item: any }) => (
       <TouchableOpacity
         style={[styles.optionCard, stickersToOffer.some((sticker) => sticker.id === item.id) && styles.optionCardSelected]}
         onPress={() => addOrRemoveSticker(item)}
@@ -50,6 +60,7 @@ export default function NewTradeScreen({ navigation, route }: any) {
         <Text style={styles.optionName} numberOfLines={1}>
           {item.name}
         </Text>
+        <Text style={styles.optionRecommended}>{item.recommended && "Recommended"}</Text>
       </TouchableOpacity>
     );
   
@@ -75,7 +86,7 @@ export default function NewTradeScreen({ navigation, route }: any) {
                 <Text style={styles.label}>You Give</Text>
 
                 <FlatList 
-                    data={album.filter(s => getCardState(s.id).quantity > 0)}
+                    data={myStickers}
                     renderItem={renderStickerOption}
                     keyExtractor={(item) => item.id}
                     horizontal
@@ -166,4 +177,6 @@ const styles = StyleSheet.create({
     optionName: { fontSize: 12, marginTop: 2 },
     footer: { marginTop: 20 },
     info: { fontSize: 14, color: "#999", fontStyle: "italic" , marginTop: 4  },
+    optionRecommended: { fontSize: 11, color: "#4CAF50", marginTop: 4, fontWeight: "bold" },
+
 });
