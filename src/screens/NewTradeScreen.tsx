@@ -70,7 +70,7 @@ export default function NewTradeScreen({ navigation, route }: any) {
                 <Text style={styles.value}>{user.username}</Text>
 
                 <Text style={styles.label}>You Receive</Text>
-                <Text style={styles.value}>{sticker?.name} ({sticker?.code})</Text>
+                <Text style={styles.value}>{sticker?.name} ({sticker?.country.code} #{sticker?.countryNumber})</Text>
 
                 <Text style={styles.label}>You Give</Text>
 
@@ -86,7 +86,7 @@ export default function NewTradeScreen({ navigation, route }: any) {
                 {stickersToOffer.length > 0 ? (
                 stickersToOffer.map((sticker) => (
                     <Text key={sticker.id} style={styles.value}>
-                        • {sticker.name} ({sticker.code})
+                        • {sticker.name} ({sticker.country.code} #{sticker.countryNumber})
                     </Text>
                 ))
                 ) : (
