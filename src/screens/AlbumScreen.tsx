@@ -36,6 +36,22 @@ export default function AlbumScreen({ navigation }: any) {
     }, [])
   );
 
+  const [changed, setChanged] = React.useState(false);
+  const handleIncrement = (id: string) => {
+    incrementQuantity(id);
+    setChanged(true);
+  };
+
+  const handleDecrement = (id: string) => {
+    decrementQuantity(id);
+    setChanged(true);
+  };
+
+  const handleSave = async () => {
+    await saveCollection();
+    setChanged(false);
+  };
+
   const renderSticker = ({ item }: { item: Sticker }) => {
     const state = getCardState(item.id);
     const owned = state.quantity > 0;
@@ -55,11 +71,11 @@ export default function AlbumScreen({ navigation }: any) {
         <View style={styles.cardActions}>
           
             <View style={styles.quantityRow}>
-              <TouchableOpacity onPress={() => decrementQuantity(item.id)} style={styles.qtyBtn}>
+              <TouchableOpacity onPress={() => handleDecrement(item.id)} style={styles.qtyBtn}>
                 <Text style={styles.qtyBtnText}>-</Text>
               </TouchableOpacity>
               <Text style={styles.qtyText}>{state.quantity}</Text>
-              <TouchableOpacity onPress={() => incrementQuantity(item.id)} style={styles.qtyBtn}>
+              <TouchableOpacity onPress={() => handleIncrement(item.id)} style={styles.qtyBtn}>
                 <Text style={styles.qtyBtnText}>+</Text>
               </TouchableOpacity>
             </View>
@@ -100,8 +116,9 @@ export default function AlbumScreen({ navigation }: any) {
         <Text style={styles.headerTitle}>My Album</Text>
         <View style={styles.headerButtons}>
           <TouchableOpacity
+            disabled={!changed}
             onPress={() => navigation.navigate("Trade")}
-            style={styles.searchBtn}
+            style={[styles.searchBtn, changed && { opacity: 0.5 }]}
           >
             <Text style={styles.searchBtnText}>Trade</Text>
           </TouchableOpacity>
@@ -144,13 +161,17 @@ export default function AlbumScreen({ navigation }: any) {
       />
       </View>
 
-      <TouchableOpacity style={styles.saveBtn} onPress={saveCollection} disabled={saving}>
+      {
+        changed && (
+          <TouchableOpacity style={[styles.saveBtn]} onPress={handleSave} disabled={saving}>
         {saving ? (
           <ActivityIndicator color="#fff" />
         ) : (
           <Text style={styles.saveBtnText}>Save Collection</Text>
         )}
       </TouchableOpacity>
+        )
+      }
     </View>
   );
 }
