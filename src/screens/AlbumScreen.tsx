@@ -82,10 +82,6 @@ export default function AlbumScreen({ navigation }: any) {
             </TouchableOpacity>
           )}
         </View>
-
-        {owned && state.available > 0 && (
-          <Text style={styles.availableText}>Available: {state.available}</Text>
-        )}
       </View>
     );
   };
@@ -181,7 +177,6 @@ const styles = StyleSheet.create({
   needBtnActive: { backgroundColor: "#FF9800" },
   needBtnText: { color: "#FF9800", fontSize: 12, fontWeight: "bold" },
   needBtnTextActive: { color: "#fff" },
-  availableText: { fontSize: 11, color: "#4CAF50", textAlign: "center", marginTop: 4 },
   saveBtn: {
     backgroundColor: "#4CAF50",
     margin: 15,

@@ -3,7 +3,7 @@ import { Alert } from "react-native";
 import { albumService, collectionService } from "../services/api";
 import { Sticker } from "../types";
 
-type CardState = { quantity: number; available: number; needed: boolean };
+type CardState = { quantity: number; needed: boolean };
 
 export function useAlbumController() {
     const [album, setAlbum] = useState<Sticker[]>([]);
@@ -27,7 +27,6 @@ export function useAlbumController() {
             collectionData.forEach((uc) => {
                 state.set(uc.id, {
                     quantity: uc.quantity,
-                    available: uc.available,
                     needed: uc.needed,
                 });
             });
@@ -40,7 +39,7 @@ export function useAlbumController() {
     };
 
     const getCardState = (stickerId: string): CardState =>
-        localState.get(stickerId) ?? { quantity: 0, available: 0, needed: false };
+        localState.get(stickerId) ?? { quantity: 0, needed: false };
 
     const toggleOwned = (stickerId: string) => {
         setLocalState((prev) => {
@@ -49,7 +48,7 @@ export function useAlbumController() {
             if (current && current.quantity > 0) {
                 next.delete(stickerId);
             } else {
-                next.set(stickerId, { quantity: 1, available: 0, needed: false });
+                next.set(stickerId, { quantity: 1, needed: false });
             }
             return next;
         });
@@ -61,7 +60,7 @@ export function useAlbumController() {
             const current = next.get(stickerId);
             if (current) {
                 const newQty = current.quantity + 1;
-                next.set(stickerId, { ...current, quantity: newQty, available: newQty - 1 });
+                next.set(stickerId, { ...current, quantity: newQty});
             }
             return next;
         });
@@ -76,7 +75,6 @@ export function useAlbumController() {
                 next.set(stickerId, {
                     ...current,
                     quantity: newQty,
-                    available: Math.max(0, newQty - 1),
                 });
             } else if (current && current.quantity === 1) {
                 next.delete(stickerId);
@@ -91,7 +89,7 @@ export function useAlbumController() {
             const next = new Map(prev);
             const current = next.get(stickerId);
             if (!current) {
-                next.set(stickerId, { quantity: 0, available: 0, needed: true });
+                next.set(stickerId, { quantity: 0, needed: true });
             } else if (current.quantity === 0) {
                 // Only toggle needed when the user does not own the sticker
                 next.set(stickerId, { ...current, needed: !current.needed });
@@ -107,7 +105,6 @@ export function useAlbumController() {
             const cards = Array.from(localState.entries()).map(([stickerId, state]) => ({
                 stickerId,
                 quantity: state.quantity,
-                available: state.available,
                 needed: state.needed,
             }));
             await collectionService.updateCollection(cards);

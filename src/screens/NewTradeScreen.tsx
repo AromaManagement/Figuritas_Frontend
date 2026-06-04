@@ -75,7 +75,7 @@ export default function NewTradeScreen({ navigation, route }: any) {
                 <Text style={styles.label}>You Give</Text>
 
                 <FlatList 
-                    data={album.filter(s => getCardState(s.id).available > 0)}
+                    data={album.filter(s => getCardState(s.id).quantity > 0)}
                     renderItem={renderStickerOption}
                     keyExtractor={(item) => item.id}
                     horizontal

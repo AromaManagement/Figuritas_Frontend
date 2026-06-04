@@ -38,7 +38,7 @@ export const collectionService = {
     },
 
     async updateCollection(
-        cards: { stickerId: string; quantity: number; available: number; needed: boolean }[]
+        cards: { stickerId: string; quantity: number; needed: boolean }[]
     ): Promise<void> {
         await authFetch("/collection", {
             method: "PUT",

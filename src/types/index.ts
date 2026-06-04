@@ -24,7 +24,6 @@ export interface Sticker {
 // A sticker in the user's collection (owned or wanted)
 export interface UserCard extends Sticker {
     quantity: number;   // copies owned (0 if only wanted)
-    available: number;  // copies not committed to active trades
     needed: boolean;    // true only when quantity = 0 (user wants it for the album)
 }
 
@@ -48,8 +47,7 @@ export interface SearchResult {
         lng: number | null;
     };
     sticker: Sticker;
-    available: number;
-    possibleOffers: (Sticker & { available: number })[];
+    possibleOffers: (Sticker)[];
 }
 
 export interface TradePartner {
