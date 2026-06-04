@@ -161,6 +161,7 @@ const styles = StyleSheet.create({
     buttonText: { color: "#fff", fontWeight: "600" },
     optionsList: { maxHeight: 80, paddingHorizontal: 10 },
     optionCard: {
+        width: 120,
         backgroundColor: "#fff",
         borderRadius: 8,
         padding: 10,

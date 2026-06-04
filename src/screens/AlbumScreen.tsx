@@ -91,13 +91,12 @@ export default function AlbumScreen({ navigation }: any) {
         map.set(s.country.code, { code: s.country.code, name: s.country.name });
       }
     });
-    return [{ code: "ALL", name: "All" }, ...Array.from(map.values())];
+    return Array.from(map.values());
   }, [album]);
 
-  const [selectedCountry, setSelectedCountry] = React.useState<string>("ALL");
+  const [selectedCountry, setSelectedCountry] = React.useState<string>("FWC");
 
   const filteredAlbum = React.useMemo(() => {
-    if (selectedCountry === "ALL") return album;
     return album.filter((s) => s.country.code === selectedCountry);
   }, [album, selectedCountry]);
 

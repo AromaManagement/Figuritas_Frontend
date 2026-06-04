@@ -6,16 +6,22 @@ import {
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
+  TextInput
 } from "react-native";
 import { useSearchController } from "../controllers/useSearchController";
 import { Sticker, SearchResult } from "../types";
 
 export default function SearchScreen({ navigation }: any) {
-  const { album, results, selectedStickerId, loading, loadingAlbum, search } =
-    useSearchController();
+const { album, results, selectedStickerId, setSelectedStickerId, loading, loadingAlbum, search } =
+  useSearchController();
 
+const [optionList, setOptionList] = React.useState<Sticker[]>(album);
 
-  const renderStickerOption = ({ item }: { item: Sticker }) => (
+React.useEffect(() => {
+  setOptionList(album);
+}, [album]);
+
+const renderStickerOption = ({ item }: { item: Sticker }) => (
     <TouchableOpacity
       style={[styles.optionCard, selectedStickerId === item.id && styles.optionCardSelected]}
       onPress={() => search(item.id)}
@@ -40,21 +46,38 @@ export default function SearchScreen({ navigation }: any) {
       </View>
 
       
-
+      
       {item.possibleOffers.length > 0 ? (
         <View style={styles.matchSection}>
-          <Text style={styles.matchTitle}>You can offer:</Text>
-          {item.possibleOffers.map((offer) => (
-            <Text key={offer.id} style={styles.matchItem}>
-              • {offer.name} ({offer.country.code})
-            </Text>
-          ))}
+        <Text style={styles.matchTitle}>You can offer:</Text>
+        {item.possibleOffers.map((offer) => (
+          <Text key={offer.id} style={styles.matchItem}>
+            • {offer.name} ({offer.country.code})
+          </Text>
+        ))}
         </View>
       ) : (
         <Text style={styles.noMatch}>They don't need anything you have available</Text>
       )}
+        
     </View>
   );
+
+  const handleSearch = (q: string) => {
+    // Check if the sticker exists in the album before searching
+    q = q.trim().toLowerCase();
+    const found = album.filter((sticker) =>
+      sticker.name.toLowerCase().includes(q) ||
+      sticker.country.code.toLowerCase().includes(q) || 
+      sticker.id.toLowerCase() === q
+    );
+
+
+    setSelectedStickerId(null);
+
+    setOptionList(q === "" ? album : found.length > 0 ? found : []);
+
+  };
 
   if (loadingAlbum) {
     return (
@@ -62,7 +85,7 @@ export default function SearchScreen({ navigation }: any) {
         <ActivityIndicator size="large" color="#2196F3" />
       </View>
     );
-  }
+  } 
 
   return (
     <View style={styles.container}>
@@ -73,16 +96,29 @@ export default function SearchScreen({ navigation }: any) {
         <Text style={styles.headerTitle}>Find a Sticker</Text>
       </View>
 
-      <Text style={styles.instruction}>Select the sticker you are looking for:</Text>
+        <TextInput
+          style={{ ...styles.searchField }}
+          placeholder="Search for a sticker..."
+          onChangeText={handleSearch}
+        />
 
-      <FlatList
-        data={album}
-        renderItem={renderStickerOption}
-        keyExtractor={(item) => item.id}
-        horizontal
-        style={styles.optionsList}
-        showsHorizontalScrollIndicator={false}
-      />
+
+      {(optionList.length !== 0) ? (
+        <>
+          <Text style={styles.instruction}>Select the sticker you are looking for:</Text>
+          <FlatList
+            data={optionList}
+            renderItem={renderStickerOption}
+            keyExtractor={(item) => item.id}
+            horizontal
+          style={styles.optionsList}
+          showsHorizontalScrollIndicator={false}
+          />
+          </>
+      ) : (
+        <Text style={styles.instruction}>No results found</Text>
+      )}
+
 
       {loading && (
         <View style={styles.centered}>
@@ -91,7 +127,7 @@ export default function SearchScreen({ navigation }: any) {
         </View>
       )}
 
-      {results !== null && !loading && (
+      {results !== null && !loading && selectedStickerId != null && (
         <View style={styles.resultsContainer}>
           <Text style={styles.resultsTitle}>
             {results.length > 0
@@ -127,15 +163,15 @@ const styles = StyleSheet.create({
   backBtn: { fontSize: 16, color: "#2196F3" },
   headerTitle: { fontSize: 20, fontWeight: "bold" },
   instruction: { padding: 15, fontSize: 14, color: "#666" },
-  optionsList: { maxHeight: 80, paddingHorizontal: 10 },
+  optionsList: { maxHeight: 60, paddingHorizontal: 10 },
   optionCard: {
+    width: 120,
     backgroundColor: "#fff",
     borderRadius: 8,
     padding: 10,
     marginHorizontal: 4,
     borderWidth: 1,
     borderColor: "#ddd",
-    minWidth: 100,
     alignItems: "center",
   },
   optionCardSelected: { borderColor: "#2196F3", backgroundColor: "#e3f2fd" },
@@ -170,4 +206,24 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
   },
   tradeButtonText: { color: "#fff", fontWeight: "600" },
+  searchField: {
+    marginTop: 10,
+    width: "auto",
+    backgroundColor: "#fff",
+    borderRadius: 6,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    alignSelf: "stretch",
+    marginHorizontal: 15,
+  },
+  searchButton: {
+    width: 80,
+    backgroundColor: "#2196F3",
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderRadius: 6,
+    alignSelf: "flex-start",
+    marginLeft: 0,
+  },
+  searchButtonText: { color: "#fff", fontWeight: "600" },
 });

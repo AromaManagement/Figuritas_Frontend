@@ -42,6 +42,7 @@ export function useSearchController() {
         album,
         results,
         selectedStickerId,
+        setSelectedStickerId,
         loading,
         loadingAlbum,
         search,
