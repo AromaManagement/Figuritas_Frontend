@@ -116,7 +116,7 @@ export default function AlbumScreen({ navigation }: any) {
         <Text style={styles.headerTitle}>My Album</Text>
         <View style={styles.headerButtons}>
           <TouchableOpacity
-            disabled={!changed}
+            disabled={changed}
             onPress={() => navigation.navigate("Trade")}
             style={[styles.searchBtn, changed && { opacity: 0.5 }]}
           >
