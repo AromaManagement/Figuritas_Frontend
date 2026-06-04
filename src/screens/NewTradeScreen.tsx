@@ -19,7 +19,7 @@ export default function NewTradeScreen({ navigation, route }: any) {
     requestTrade(stickerId, stickersToOffer.map(s => s.id), user.id)
     .then(() => {
         Alert.alert("Success", "Trade request sent successfully!");    
-        navigation.navigate("Trade", { initialActiveTab: "sent" });
+        navigation.replace("Trade", { initialActiveTab: "sent" });
     }).catch((error) => {
         Alert.alert("Error requesting trade", error.message);
     }).finally(() => {
@@ -75,7 +75,7 @@ export default function NewTradeScreen({ navigation, route }: any) {
                 <Text style={styles.label}>You Give</Text>
 
                 <FlatList 
-                    data={album.filter(s => getCardState(s.id).available > 0)}
+                    data={album.filter(s => getCardState(s.id).quantity > 0)}
                     renderItem={renderStickerOption}
                     keyExtractor={(item) => item.id}
                     horizontal

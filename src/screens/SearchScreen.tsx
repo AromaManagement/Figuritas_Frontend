@@ -14,6 +14,7 @@ export default function SearchScreen({ navigation }: any) {
   const { album, results, selectedStickerId, loading, loadingAlbum, search } =
     useSearchController();
 
+
   const renderStickerOption = ({ item }: { item: Sticker }) => (
     <TouchableOpacity
       style={[styles.optionCard, selectedStickerId === item.id && styles.optionCardSelected]}
@@ -155,7 +156,6 @@ const styles = StyleSheet.create({
   resultHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
   resultUser: { fontSize: 16, fontWeight: "bold", alignItems: "center" },
   resultCity: { fontSize: 13, color: "#666" },
-  resultAvailable: { fontSize: 13, color: "#4CAF50", marginTop: 4 },
   matchSection: { marginTop: 10, padding: 8, backgroundColor: "#f1f8e9", borderRadius: 6 },
   matchTitle: { fontSize: 13, fontWeight: "bold", color: "#4CAF50", marginBottom: 4 },
   matchItem: { fontSize: 13, color: "#333", marginLeft: 4 },

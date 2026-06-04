@@ -20,10 +20,8 @@ export default function AlbumScreen({ navigation }: any) {
     loading,
     saving,
     getCardState,
-    toggleOwned,
     incrementQuantity,
     decrementQuantity,
-    toggleNeeded,
     saveCollection,
   } = useAlbumController();
 
@@ -41,8 +39,8 @@ export default function AlbumScreen({ navigation }: any) {
   const renderSticker = ({ item }: { item: Sticker }) => {
     const state = getCardState(item.id);
     const owned = state.quantity > 0;
-    const needed = state.needed;
-
+    const needed = state.quantity === 0;
+    
     return (
       <View style={[styles.card, owned && styles.cardOwned, needed && !owned && styles.cardNeeded]}>
         <View style={styles.cardHeader}>
@@ -55,7 +53,7 @@ export default function AlbumScreen({ navigation }: any) {
         <Text style={styles.cardType}>{item.type}</Text>
 
         <View style={styles.cardActions}>
-          {owned ? (
+          
             <View style={styles.quantityRow}>
               <TouchableOpacity onPress={() => decrementQuantity(item.id)} style={styles.qtyBtn}>
                 <Text style={styles.qtyBtnText}>-</Text>
@@ -65,27 +63,7 @@ export default function AlbumScreen({ navigation }: any) {
                 <Text style={styles.qtyBtnText}>+</Text>
               </TouchableOpacity>
             </View>
-          ) : (
-            <TouchableOpacity onPress={() => toggleOwned(item.id)} style={styles.addBtn}>
-              <Text style={styles.addBtnText}>I have it</Text>
-            </TouchableOpacity>
-          )}
-
-          {!owned && (
-            <TouchableOpacity
-              onPress={() => toggleNeeded(item.id)}
-              style={[styles.needBtn, needed && styles.needBtnActive]}
-            >
-              <Text style={[styles.needBtnText, needed && styles.needBtnTextActive]}>
-                {needed ? "✓ Need it" : "Need it"}
-              </Text>
-            </TouchableOpacity>
-          )}
         </View>
-
-        {owned && state.available > 0 && (
-          <Text style={styles.availableText}>Available: {state.available}</Text>
-        )}
       </View>
     );
   };
@@ -164,7 +142,7 @@ const styles = StyleSheet.create({
     borderColor: "#eee",
   },
   cardOwned: { borderColor: "#4CAF50", backgroundColor: "#f1f8e9" },
-  cardNeeded: { borderColor: "#FF9800", backgroundColor: "#fff3e0" },
+  cardNeeded: {},
   cardHeader: { flexDirection: "row", justifyContent: "space-between" },
   cardCountry: { fontSize: 12, fontWeight: "bold", color: "#666" },
   cardNumber: { fontSize: 12, color: "#999" },
@@ -181,7 +159,6 @@ const styles = StyleSheet.create({
   needBtnActive: { backgroundColor: "#FF9800" },
   needBtnText: { color: "#FF9800", fontSize: 12, fontWeight: "bold" },
   needBtnTextActive: { color: "#fff" },
-  availableText: { fontSize: 11, color: "#4CAF50", textAlign: "center", marginTop: 4 },
   saveBtn: {
     backgroundColor: "#4CAF50",
     margin: 15,
