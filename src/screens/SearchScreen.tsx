@@ -14,6 +14,7 @@ export default function SearchScreen({ navigation }: any) {
   const { album, results, selectedStickerId, loading, loadingAlbum, search } =
     useSearchController();
 
+
   const renderStickerOption = ({ item }: { item: Sticker }) => (
     <TouchableOpacity
       style={[styles.optionCard, selectedStickerId === item.id && styles.optionCardSelected]}
