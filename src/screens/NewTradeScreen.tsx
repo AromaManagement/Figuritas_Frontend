@@ -19,7 +19,7 @@ export default function NewTradeScreen({ navigation, route }: any) {
     requestTrade(stickerId, stickersToOffer.map(s => s.id), user.id)
     .then(() => {
         Alert.alert("Success", "Trade request sent successfully!");    
-        navigation.navigate("Trade", { initialActiveTab: "sent" });
+        navigation.replace("Trade", { initialActiveTab: "sent" });
     }).catch((error) => {
         Alert.alert("Error requesting trade", error.message);
     }).finally(() => {
