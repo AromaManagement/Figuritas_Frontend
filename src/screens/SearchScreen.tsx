@@ -6,20 +6,24 @@ import {
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
-  TextInput
+  TextInput,
+  Keyboard,
+  TouchableWithoutFeedback,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useSearchController } from "../controllers/useSearchController";
 import { Sticker, SearchResult } from "../types";
 
 export default function SearchScreen({ navigation }: any) {
-const { album, results, selectedStickerId, setSelectedStickerId, loading, loadingAlbum, search } =
+const insets = useSafeAreaInsets();
+const { missingStickers, results, selectedStickerId, setSelectedStickerId, loading, loadingAlbum, search } =
   useSearchController();
 
-const [optionList, setOptionList] = React.useState<Sticker[]>(album);
+const [optionList, setOptionList] = React.useState<Sticker[]>(missingStickers);
 
 React.useEffect(() => {
-  setOptionList(album);
-}, [album]);
+  setOptionList(missingStickers);
+}, [missingStickers]);
 
 const renderStickerOption = ({ item }: { item: Sticker }) => (
     <TouchableOpacity
@@ -64,19 +68,15 @@ const renderStickerOption = ({ item }: { item: Sticker }) => (
   );
 
   const handleSearch = (q: string) => {
-    // Check if the sticker exists in the album before searching
     q = q.trim().toLowerCase();
-    const found = album.filter((sticker) =>
+    const found = missingStickers.filter((sticker) =>
       sticker.name.toLowerCase().includes(q) ||
-      sticker.country.code.toLowerCase().includes(q) || 
+      sticker.country.code.toLowerCase().includes(q) ||
       sticker.id.toLowerCase() === q
     );
 
-
     setSelectedStickerId(null);
-
-    setOptionList(q === "" ? album : found.length > 0 ? found : []);
-
+    setOptionList(q === "" ? missingStickers : found.length > 0 ? found : []);
   };
 
   if (loadingAlbum) {
@@ -88,11 +88,9 @@ const renderStickerOption = ({ item }: { item: Sticker }) => (
   } 
 
   return (
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
     <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={styles.backBtn}>← Back</Text>
-        </TouchableOpacity>
+      <View style={[styles.header, { paddingTop: insets.top + 10 }]}>
         <Text style={styles.headerTitle}>Find a Sticker</Text>
       </View>
 
@@ -111,8 +109,9 @@ const renderStickerOption = ({ item }: { item: Sticker }) => (
             renderItem={renderStickerOption}
             keyExtractor={(item) => item.id}
             horizontal
-          style={styles.optionsList}
-          showsHorizontalScrollIndicator={false}
+            style={styles.optionsList}
+            showsHorizontalScrollIndicator={false}
+            keyboardDismissMode="on-drag"
           />
           </>
       ) : (
@@ -140,10 +139,12 @@ const renderStickerOption = ({ item }: { item: Sticker }) => (
             renderItem={renderResult}
             keyExtractor={(item) => item.user.id.toString()}
             contentContainerStyle={styles.resultsList}
+            keyboardDismissMode="on-drag"
           />
         </View>
       )}
     </View>
+    </TouchableWithoutFeedback>
   );
 }
 
@@ -154,7 +155,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     padding: 15,
-    paddingTop: 50,
+    paddingTop: 0,
     backgroundColor: "#fff",
     borderBottomWidth: 1,
     borderBottomColor: "#eee",

@@ -7,12 +7,15 @@ import {
   StyleSheet,
   ActivityIndicator,
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAuth } from "../context/AuthContext";
 import { useAlbumController } from "../controllers/useAlbumController";
 import { Sticker } from "../types";
 import { useFocusEffect } from "@react-navigation/native";
 
-export default function AlbumScreen({ navigation }: any) {
+export default function AlbumScreen() {
+  const insets = useSafeAreaInsets();
   const { logout } = useAuth();
   const {
     loadData,
@@ -91,12 +94,13 @@ export default function AlbumScreen({ navigation }: any) {
         map.set(s.country.code, { code: s.country.code, name: s.country.name });
       }
     });
-    return Array.from(map.values());
+    return [{ code: "ALL", name: "All" }, ...Array.from(map.values())];
   }, [album]);
 
-  const [selectedCountry, setSelectedCountry] = React.useState<string>("FWC");
+  const [selectedCountry, setSelectedCountry] = React.useState<string>("ALL");
 
   const filteredAlbum = React.useMemo(() => {
+    if (selectedCountry === "ALL") return album;
     return album.filter((s) => s.country.code === selectedCountry);
   }, [album, selectedCountry]);
 
@@ -111,20 +115,11 @@ export default function AlbumScreen({ navigation }: any) {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: insets.top + 10 }]}>
         <Text style={styles.headerTitle}>My Album</Text>
-        <View style={styles.headerButtons}>
-          <TouchableOpacity
-            disabled={changed}
-            onPress={() => navigation.navigate("Trade")}
-            style={[styles.searchBtn, changed && { opacity: 0.5 }]}
-          >
-            <Text style={styles.searchBtnText}>Trade</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={logout} style={styles.logoutBtn}>
-            <Text style={styles.logoutBtnText}>Sign Out</Text>
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity onPress={logout} style={styles.logoutBtn}>
+          <Ionicons name="log-out-outline" size={24} color="#999" />
+        </TouchableOpacity>
       </View>
 
       <View style={{ flex: 1, justifyContent: "flex-start"}}>
@@ -183,18 +178,14 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     padding: 15,
-    paddingTop: 50,
+    paddingTop: 0,
     backgroundColor: "#fff",
     borderBottomWidth: 1,
     borderBottomColor: "#eee",
   },
   headerTitle: { fontSize: 22, fontWeight: "bold" },
-  headerButtons: { flexDirection: "row", gap: 8 },
-  searchBtn: { backgroundColor: "#2196F3", borderRadius: 6, paddingHorizontal: 12, paddingVertical: 6 },
-  searchBtnText: { color: "#fff", fontWeight: "bold" },
-  logoutBtn: { backgroundColor: "#f44336", borderRadius: 6, paddingHorizontal: 12, paddingVertical: 6 },
-  logoutBtnText: { color: "#fff", fontWeight: "bold" },
-  list: { padding: 8 , flex: 1, justifyContent: "flex-start", backgroundColor: "#f5f5f5" },
+  logoutBtn: { padding: 4 },
+  list: { padding: 8, justifyContent: "flex-start", backgroundColor: "#f5f5f5" },
   card: {
     flex: 1,
     margin: 4,

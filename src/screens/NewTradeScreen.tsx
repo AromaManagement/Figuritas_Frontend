@@ -1,11 +1,13 @@
 import { useState, useMemo } from "react";
 import { View, Text, TouchableOpacity, StyleSheet, FlatList, Alert } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Sticker } from "../types";
 import { useAlbumController } from "../controllers/useAlbumController";
 import { useTradeController } from "../controllers/useTradeController";
 
 
 export default function NewTradeScreen({ navigation, route }: any) {
+  const insets = useSafeAreaInsets();
   const { user, stickerId, userNeeds } = route.params;
   const [loading, setLoading] = useState(false);
   const [stickersToOffer, setStickersToOffer] = useState<Sticker[]>([]);
@@ -19,7 +21,7 @@ export default function NewTradeScreen({ navigation, route }: any) {
     requestTrade(stickerId, stickersToOffer.map(s => s.id), user.id)
     .then(() => {
         Alert.alert("Success", "Trade request sent successfully!");    
-        navigation.replace("Trade", { initialActiveTab: "sent" });
+        navigation.navigate("Trades", { screen: "TradeHome", params: { initialActiveTab: "sent" } });
     }).catch((error) => {
         Alert.alert("Error requesting trade", error.message);
     }).finally(() => {
@@ -82,7 +84,7 @@ export default function NewTradeScreen({ navigation, route }: any) {
 
   return (
     <View style={styles.container}>
-          <View style={styles.header}>
+          <View style={[styles.header, { paddingTop: insets.top + 10 }]}>
             <TouchableOpacity onPress={() => navigation.goBack()}>
               <Text style={styles.backBtn}>← Back </Text>
             </TouchableOpacity>
@@ -146,7 +148,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         padding: 15,
-        paddingTop: 50,
+        paddingTop: 0,
         backgroundColor: "#fff",
         borderBottomWidth: 1,
         borderBottomColor: "#eee",

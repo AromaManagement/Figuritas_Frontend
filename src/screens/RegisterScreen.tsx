@@ -7,6 +7,8 @@ import {
   StyleSheet,
   Alert,
   ActivityIndicator,
+  Keyboard,
+  TouchableWithoutFeedback,
 } from "react-native";
 import { useAuth } from "../context/AuthContext";
 
@@ -35,6 +37,7 @@ export default function RegisterScreen({ navigation }: any) {
   };
 
   return (
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
     <View style={styles.container}>
       <Text style={styles.title}>Create Account</Text>
 
@@ -83,6 +86,7 @@ export default function RegisterScreen({ navigation }: any) {
         <Text style={styles.link}>Already have an account? Sign in</Text>
       </TouchableOpacity>
     </View>
+    </TouchableWithoutFeedback>
   );
 }
 

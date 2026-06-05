@@ -4,20 +4,24 @@ import { albumService, collectionService } from "../services/api";
 import { Sticker, SearchResult } from "../types";
 
 export function useSearchController() {
-    const [album, setAlbum] = useState<Sticker[]>([]);
+    const [missingStickers, setMissingStickers] = useState<Sticker[]>([]);
     const [results, setResults] = useState<SearchResult[] | null>(null);
     const [selectedStickerId, setSelectedStickerId] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [loadingAlbum, setLoadingAlbum] = useState(true);
 
     useEffect(() => {
-        loadAlbum();
+        loadData();
     }, []);
 
-    const loadAlbum = async () => {
+    const loadData = async () => {
         try {
-            const data = await albumService.getAll();
-            setAlbum(data);
+            const [albumData, collectionData] = await Promise.all([
+                albumService.getAll(),
+                collectionService.getMyCollection(),
+            ]);
+            const ownedIds = new Set(collectionData.filter((c) => c.quantity > 0).map((c) => c.id));
+            setMissingStickers(albumData.filter((s) => !ownedIds.has(s.id)));
         } catch (error: any) {
             Alert.alert("Error", error.message);
         } finally {
@@ -39,7 +43,7 @@ export function useSearchController() {
     };
 
     return {
-        album,
+        missingStickers,
         results,
         selectedStickerId,
         setSelectedStickerId,

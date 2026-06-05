@@ -7,6 +7,7 @@ import {
   StyleSheet,
   ActivityIndicator,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Trade } from "../types";
 import { useTradeController } from "../controllers/useTradeController";
 import { useFocusEffect } from "@react-navigation/native";
@@ -17,6 +18,7 @@ const SENT = "sent" as const;
 type Tab = typeof RECEIVED | typeof SENT;
 
 export default function TradeScreen({ navigation , route}: any) {
+  const insets = useSafeAreaInsets();
   const { loadTrades, outgoingTrades, incomingTrades, loading } = useTradeController();
   const { initialActiveTab } = route?.params ?? {};
   const [activeTab, setActiveTab] = useState<Tab>(initialActiveTab || RECEIVED);
@@ -59,10 +61,7 @@ export default function TradeScreen({ navigation , route}: any) {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-        <Text style={styles.backBtn}>← Back</Text>
-        </TouchableOpacity>
+      <View style={[styles.header, { paddingTop: insets.top + 10 }]}>
         <Text style={styles.headerTitle}>Sticker Trades</Text>
     </View>
 
@@ -146,7 +145,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     padding: 15,
-    paddingTop: 50,
+    paddingTop: 0,
     backgroundColor: "#fff",
     borderBottomWidth: 1,
     borderBottomColor: "#eee",

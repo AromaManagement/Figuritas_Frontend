@@ -7,10 +7,12 @@ import {
   ActivityIndicator,
   Alert,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Sticker, Trade } from "../types";
 import { useTradeController } from "../controllers/useTradeController";
 
 export default function TradeDataScreen({ navigation, route }: any) {
+  const insets = useSafeAreaInsets();
   const [loading, setLoading] = useState(false);
   const tradeId: string | undefined = route.params?.tradeId;
   const { updateTradeStatus, completeTrade, getTradeById } = useTradeController();
@@ -129,7 +131,7 @@ export default function TradeDataScreen({ navigation, route }: any) {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: insets.top + 10 }]}>
 
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Text style={styles.backBtn}>← Back</Text>
@@ -142,13 +144,9 @@ export default function TradeDataScreen({ navigation, route }: any) {
         <View style={styles.detailCard}>
           <View style={styles.tradeInfo}>
             <View style={styles.tradeHeader}>
-              <View>
-                <Text style={styles.tradeTitle}>Trade</Text>
-              <Text style={styles.tradeSubtitle}>#{trade.id}</Text>
-            </View>
-
+              <Text style={styles.tradeTitle}>Trade</Text>
               <View style={[styles.statusBadge, statusStyle(trade.status)]}>
-                <Text style={styles.statusText}>{trade.status.toUpperCase()}</Text>
+                <Text style={[styles.statusText, statusTextStyle(trade.status)]}>{trade.status.toUpperCase()}</Text>
               </View>
             </View>
 
@@ -193,12 +191,12 @@ export default function TradeDataScreen({ navigation, route }: any) {
   );
 }
 
-const statusStyle = (status: Trade["status"]) => { 
+const statusStyle = (status: Trade["status"]) => {
   switch (status) {
     case "accepted":
       return { backgroundColor: "#d4f5d4" };
     case "completed":
-      return { backgroundColor: "#c2c3f0ff" };
+      return { backgroundColor: "#5c6bc0" };
     case "ongoing":
       return { backgroundColor: "#fff4c2" };
     case "declined":
@@ -208,12 +206,16 @@ const statusStyle = (status: Trade["status"]) => {
   }
 };
 
+const statusTextStyle = (status: Trade["status"]) => {
+  return status === "completed" ? { color: "#fff" } : { color: "#333" };
+};
+
 const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     alignItems: "center",
     padding: 15,
-    paddingTop: 50,
+    paddingTop: 0,
     backgroundColor: "#fff",
     borderBottomWidth: 1,
     borderBottomColor: "#eee",

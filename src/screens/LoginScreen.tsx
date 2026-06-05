@@ -7,6 +7,8 @@ import {
   StyleSheet,
   Alert,
   ActivityIndicator,
+  Keyboard,
+  TouchableWithoutFeedback,
 } from "react-native";
 import { useAuth } from "../context/AuthContext";
 
@@ -33,6 +35,7 @@ export default function LoginScreen({ navigation }: any) {
   };
 
   return (
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
     <View style={styles.container}>
       <Text style={styles.title}>Figuritas</Text>
       <Text style={styles.subtitle}>Sticker Marketplace</Text>
@@ -66,6 +69,7 @@ export default function LoginScreen({ navigation }: any) {
         <Text style={styles.link}>Don't have an account? Register</Text>
       </TouchableOpacity>
     </View>
+    </TouchableWithoutFeedback>
   );
 }
 
