@@ -36,7 +36,7 @@ export default function AlbumScreen() {
   useFocusEffect(
     React.useCallback(() => {
       loadDataRef.current && loadDataRef.current();
-    }, [])
+    }, []),
   );
 
   const [changed, setChanged] = React.useState(false);
@@ -59,9 +59,15 @@ export default function AlbumScreen() {
     const state = getCardState(item.id);
     const owned = state.quantity > 0;
     const needed = state.quantity === 0;
-    
+
     return (
-      <View style={[styles.card, owned && styles.cardOwned, needed && !owned && styles.cardNeeded]}>
+      <View
+        style={[
+          styles.card,
+          owned && styles.cardOwned,
+          needed && !owned && styles.cardNeeded,
+        ]}
+      >
         <View style={styles.cardHeader}>
           <Text style={styles.cardCountry}>{item.country.code}</Text>
           <Text style={styles.cardNumber}>#{item.countryNumber}</Text>
@@ -72,16 +78,22 @@ export default function AlbumScreen() {
         <Text style={styles.cardType}>{item.type}</Text>
 
         <View style={styles.cardActions}>
-          
-            <View style={styles.quantityRow}>
-              <TouchableOpacity onPress={() => handleDecrement(item.id)} style={styles.qtyBtn}>
-                <Text style={styles.qtyBtnText}>-</Text>
-              </TouchableOpacity>
-              <Text style={styles.qtyText}>{state.quantity}</Text>
-              <TouchableOpacity onPress={() => handleIncrement(item.id)} style={styles.qtyBtn}>
-                <Text style={styles.qtyBtnText}>+</Text>
-              </TouchableOpacity>
-            </View>
+          <View style={styles.quantityRow}>
+            <TouchableOpacity
+              onPress={() => handleDecrement(item.id)}
+              style={[styles.qtyBtn, !state.quantity && { opacity: 0.5 }]}
+              disabled={!state.quantity}
+            >
+              <Text style={styles.qtyBtnText}>-</Text>
+            </TouchableOpacity>
+            <Text style={styles.qtyText}>{state.quantity}</Text>
+            <TouchableOpacity
+              onPress={() => handleIncrement(item.id)}
+              style={styles.qtyBtn}
+            >
+              <Text style={styles.qtyBtnText}>+</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
     );
@@ -104,7 +116,6 @@ export default function AlbumScreen() {
     return album.filter((s) => s.country.code === selectedCountry);
   }, [album, selectedCountry]);
 
-
   if (loading) {
     return (
       <View style={styles.centered}>
@@ -122,50 +133,58 @@ export default function AlbumScreen() {
         </TouchableOpacity>
       </View>
 
-      <View style={{ flex: 1, justifyContent: "flex-start"}}>
+      <View style={{ flex: 1, justifyContent: "flex-start" }}>
+        <View>
+          <FlatList
+            data={countries}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            keyExtractor={(c) => c.code}
+            contentContainerStyle={styles.chipsContainer}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                style={[
+                  styles.chip,
+                  selectedCountry === item.code && styles.chipActive,
+                ]}
+                onPress={() => setSelectedCountry(item.code)}
+              >
+                <Text
+                  style={[
+                    styles.chipText,
+                    selectedCountry === item.code && styles.chipTextActive,
+                  ]}
+                >
+                  {item.code === "ALL" ? "All" : item.code}
+                </Text>
+              </TouchableOpacity>
+            )}
+          />
+        </View>
 
-      <View>
-
-      <FlatList 
-        data={countries}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        keyExtractor={(c) => c.code}
-        contentContainerStyle={styles.chipsContainer}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={[styles.chip, selectedCountry === item.code && styles.chipActive]}
-            onPress={() => setSelectedCountry(item.code)}
-          >
-            <Text style={[styles.chipText, selectedCountry === item.code && styles.chipTextActive]}>
-              {item.code === "ALL" ? "All" : item.code}
-            </Text>
-          </TouchableOpacity>
-        )}
+        {/* grid of stickers (filtered by selected country) */}
+        <FlatList
+          data={filteredAlbum}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={renderSticker}
+          contentContainerStyle={styles.list}
+          numColumns={2}
         />
       </View>
 
-      {/* grid of stickers (filtered by selected country) */}
-      <FlatList
-        data={filteredAlbum}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={renderSticker}
-        contentContainerStyle={styles.list}
-        numColumns={2}
-      />
-      </View>
-
-      {
-        changed && (
-          <TouchableOpacity style={[styles.saveBtn]} onPress={handleSave} disabled={saving}>
-        {saving ? (
-          <ActivityIndicator color="#fff" />
-        ) : (
-          <Text style={styles.saveBtnText}>Save Collection</Text>
-        )}
-      </TouchableOpacity>
-        )
-      }
+      {changed && (
+        <TouchableOpacity
+          style={[styles.saveBtn]}
+          onPress={handleSave}
+          disabled={saving}
+        >
+          {saving ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.saveBtnText}>Save Collection</Text>
+          )}
+        </TouchableOpacity>
+      )}
     </View>
   );
 }
@@ -185,7 +204,11 @@ const styles = StyleSheet.create({
   },
   headerTitle: { fontSize: 22, fontWeight: "bold" },
   logoutBtn: { padding: 4 },
-  list: { padding: 8, justifyContent: "flex-start", backgroundColor: "#f5f5f5" },
+  list: {
+    padding: 8,
+    justifyContent: "flex-start",
+    backgroundColor: "#f5f5f5",
+  },
   card: {
     flex: 1,
     margin: 4,
@@ -203,13 +226,35 @@ const styles = StyleSheet.create({
   cardName: { fontSize: 14, fontWeight: "bold", marginTop: 4 },
   cardType: { fontSize: 11, color: "#888", marginTop: 2 },
   cardActions: { marginTop: 8, gap: 4 },
-  quantityRow: { flexDirection: "row", alignItems: "center", justifyContent: "center" },
-  qtyBtn: { backgroundColor: "#ddd", borderRadius: 4, width: 28, height: 28, alignItems: "center", justifyContent: "center" },
+  quantityRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  qtyBtn: {
+    backgroundColor: "#ddd",
+    borderRadius: 4,
+    width: 28,
+    height: 28,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   qtyBtnText: { fontSize: 16, fontWeight: "bold" },
   qtyText: { marginHorizontal: 12, fontSize: 16, fontWeight: "bold" },
-  addBtn: { backgroundColor: "#e3f2fd", borderRadius: 4, padding: 6, alignItems: "center" },
+  addBtn: {
+    backgroundColor: "#e3f2fd",
+    borderRadius: 4,
+    padding: 6,
+    alignItems: "center",
+  },
   addBtnText: { color: "#2196F3", fontSize: 12, fontWeight: "bold" },
-  needBtn: { borderRadius: 4, padding: 6, alignItems: "center", borderWidth: 1, borderColor: "#FF9800" },
+  needBtn: {
+    borderRadius: 4,
+    padding: 6,
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#FF9800",
+  },
   needBtnActive: { backgroundColor: "#FF9800" },
   needBtnText: { color: "#FF9800", fontSize: 12, fontWeight: "bold" },
   needBtnTextActive: { color: "#fff" },
